@@ -1,0 +1,2572 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="我的小工具" />
+<meta name="theme-color" content="#B5764A" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png" />
+<link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png" />
+<title>我的小工具</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    background: #2B2B26;
+  }
+  html, body { margin: 0; min-height: 100%; background: #2B2B26; }
+  body {
+    font-family: "PingFang SC", "Helvetica Neue", -apple-system, sans-serif;
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #tabBar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; background: #2B2B26;
+    padding-top: env(safe-area-inset-top);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    white-space: nowrap;
+  }
+  #tabBar::-webkit-scrollbar { display: none; }
+  .tabBtn {
+    flex: 1 0 0; min-width: 0; border: none; background: transparent; color: rgba(255,255,255,0.55);
+    font-size: 14px; font-weight: 600; padding: 14px 10px 12px; cursor: pointer;
+    border-bottom: 2px solid transparent; font-family: inherit;
+  }
+  .tabBtn.active { color: #fff; border-bottom-color: #D9A05B; }
+
+  .appPane { display: none; }
+  .appPane.active { display: block; }
+
+  #appShell {
+    padding-top: calc(48px + env(safe-area-inset-top));
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  @supports (-webkit-touch-callout: none) {
+    html { height: -webkit-fill-available; }
+    body { min-height: -webkit-fill-available; }
+    #appShell,
+    .appPane { min-height: -webkit-fill-available; }
+  }
+</style>
+</head>
+<body>
+
+<div id="tabBar">
+  <button class="tabBtn active" data-target="app-root-training">训练</button>
+  <button class="tabBtn" data-target="app-root-skincare">护肤</button>
+  <button class="tabBtn" data-target="app-root-ledger">记账</button>
+</div>
+
+<div id="appShell">
+
+<div class="appPane active" id="pane-training">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  .app-root-training { margin: 0; min-height: 100%; }
+  .app-root-training { font-family: "PingFang SC", "Helvetica Neue", -apple-system, sans-serif;
+    color: var(--text, #2B2B26);
+    padding: 24px 16px calc(48px + env(safe-area-inset-bottom));
+    background-color: var(--bg, #F6F4EF);
+    background-image: var(--bg-image, none);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh; }
+  .app-root-training .container { max-width: 480px; margin: 0 auto; }
+  .app-root-training .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+  .app-root-training .eyebrow { font-size: 12px; letter-spacing: 0.08em; color: #8A7B5E; margin-bottom: 4px; }
+  .app-root-training h1 { font-size: 22px; font-weight: 700; margin: 0; }
+  .app-root-training .weekNav { display: flex; align-items: center; gap: 6px; }
+  .app-root-training .navBtn { border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.7); border-radius: 8px; width: 28px; height: 28px; font-size: 14px; cursor: pointer; color: var(--text, #5B5444); }
+  .app-root-training .weekLabel { font-size: 12px; color: var(--accent, #8A7B5E); min-width: 78px; text-align: center;
+    border: none; background: transparent; cursor: pointer; font-family: inherit; padding: 4px 0; }
+  .app-root-training .themeBtn { border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.7);
+    border-radius: 10px; width: 32px; height: 32px; font-size: 15px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; margin-left: 8px; }
+  .app-root-training .summaryRow { display: flex; gap: 10px; margin-bottom: 18px; }
+  .app-root-training .summaryCard { flex: 1; background: rgba(255,255,255,0.75); backdrop-filter: blur(8px); border-radius: 14px; padding: 14px 12px; border: 1px solid rgba(0,0,0,0.05); text-align: center; }
+  .app-root-training .summaryNum { font-size: 24px; font-weight: 700; color: var(--accent, #B5764A); }
+  .app-root-training .summaryLabel { font-size: 11px; color: #8A7B5E; margin-top: 2px; }
+  .app-root-training .dayStrip { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; }
+  .app-root-training .dayPill { flex: 1 0 auto; min-width: 42px; padding: 8px 0; font-size: 13px;
+    border-radius: 10px; border: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.7);
+    color: #5B5444; cursor: pointer; display: flex; flex-direction: column;
+    align-items: center; gap: 4px; }
+  .app-root-training .dayPill.active { border-color: var(--accent, #B5764A); box-shadow: 0 0 0 1px var(--accent, #B5764A) inset; }
+  .app-root-training .dayPill.done { background: rgba(255,255,255,0.95); }
+  .app-root-training .checkDot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent, #B5764A); }
+  .app-root-training .card { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border-radius: 18px; padding: 20px; border: 1px solid rgba(0,0,0,0.05); }
+  .app-root-training .cardHeadRow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+  .app-root-training .cardTitle { font-size: 16px; font-weight: 700; margin: 0; }
+  .app-root-training .doneToggle { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #5B5444; cursor: pointer; }
+  .app-root-training .doneToggle input { width: 16px; height: 16px; accent-color: var(--accent, #B5764A); }
+  .app-root-training .itemList { list-style: none; padding: 0; margin: 0 0 18px; }
+  .app-root-training .itemRow { font-size: 14px; color: #3D3A30; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .app-root-training .itemDash { color: var(--accent, #C9A06B); margin-right: 8px; }
+  .app-root-training .fieldGroup { margin-bottom: 16px; }
+  .app-root-training .fieldLabel { font-size: 12px; color: #8A7B5E; margin-bottom: 8px; }
+  .app-root-training .scaleRow { display: flex; gap: 6px; flex-wrap: wrap; }
+  .app-root-training .scaleBtn { font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.7); color: #5B5444; cursor: pointer; }
+  .app-root-training .scaleBtn.active { background: var(--accent, #B5764A); color: #fff; border-color: var(--accent, #B5764A); }
+  .app-root-training textarea { width: 100%; min-height: 64px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08);
+    padding: 10px; font-size: 13px; font-family: inherit; resize: vertical; background: rgba(255,255,255,0.7); }
+  .app-root-training .saveHint { font-size: 11px; color: #B7AE94; text-align: right; min-height: 14px; margin-top: 4px; }
+  .app-root-training .headActions { display: flex; align-items: center; gap: 10px; }
+  .app-root-training .editBtn { font-size: 12px; padding: 5px 10px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);
+    background: rgba(255,255,255,0.7); color: #8A7B5E; cursor: pointer; }
+  .app-root-training .editPanel { background: rgba(250,248,243,0.85); border-radius: 12px; padding: 14px; margin-bottom: 18px; border: 1px solid rgba(0,0,0,0.05); }
+  .app-root-training .textInput { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);
+    font-size: 14px; font-family: inherit; box-sizing: border-box; background: rgba(255,255,255,0.85); }
+  .app-root-training .editItemRow { display: flex; gap: 6px; margin-bottom: 6px; }
+  .app-root-training .editItemRow input { flex: 1; }
+  .app-root-training .removeItemBtn { border: 1px solid rgba(0,0,0,0.08); background: #fff; color: var(--accent, #B5764A); border-radius: 8px;
+    width: 32px; font-size: 16px; cursor: pointer; flex-shrink: 0; }
+  .app-root-training .addItemBtn { font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 1px dashed var(--accent, #C9A06B);
+    background: transparent; color: var(--accent, #B5764A); cursor: pointer; margin-top: 4px; }
+  .app-root-training .editActionsRow { display: flex; gap: 8px; margin-top: 14px; }
+  .app-root-training .saveEditBtn { flex: 1; padding: 9px 0; border-radius: 8px; border: none; background: var(--accent, #B5764A);
+    color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .app-root-training .cancelEditBtn { flex: 1; padding: 9px 0; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08); background: #fff;
+    color: #8A7B5E; font-size: 13px; cursor: pointer; }
+  .app-root-training .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none;
+    align-items: flex-end; justify-content: center; z-index: 50; }
+  .app-root-training .overlay.open { display: flex; }
+  .app-root-training .themePanel { background: #fff; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0;
+    padding: 20px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 80vh; overflow-y: auto; }
+  .app-root-training .themePanelTitle { font-size: 16px; font-weight: 700; margin: 0 0 14px; color: #2B2B26; }
+  .app-root-training .themeSectionLabel { font-size: 12px; color: #8A7B5E; margin: 16px 0 8px; }
+  .app-root-training .swatchRow { display: flex; gap: 10px; flex-wrap: wrap; }
+  .app-root-training .swatch { width: 44px; height: 44px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;
+    flex-shrink: 0; }
+  .app-root-training .swatch.selected { border-color: #2B2B26; }
+  .app-root-training .wallpaperGrid { display: flex; gap: 10px; flex-wrap: wrap; }
+  .app-root-training .wallpaperThumb { width: 68px; height: 68px; border-radius: 12px; cursor: pointer; border: 2px solid transparent;
+    background-size: cover; background-position: center; flex-shrink: 0; }
+  .app-root-training .wallpaperThumb.selected { border-color: #2B2B26; }
+  .app-root-training .wallpaperThumb.none { display: flex; align-items: center; justify-content: center; font-size: 11px; color: #8A7B5E; background: #F2EFE6; }
+  .app-root-training .uploadBtn { width: 68px; height: 68px; border-radius: 12px; border: 1.5px dashed #C9A06B;
+    display: flex; align-items: center; justify-content: center; font-size: 20px; color: #C9A06B;
+    cursor: pointer; flex-shrink: 0; background: transparent; }
+  .app-root-training .closeThemeBtn { width: 100%; padding: 11px 0; border-radius: 10px; border: none; margin-top: 18px;
+    background: var(--accent, #B5764A); color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .app-root-training input[type="file"] { display: none; }
+  .app-root-training .calPanel { background: #fff; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0;
+    padding: 20px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; }
+  .app-root-training .calHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .app-root-training .calMonthLabel { font-size: 16px; font-weight: 700; color: #2B2B26; }
+  .app-root-training .calNavBtn { border: 1px solid #EAE5D9; background: #fff; border-radius: 8px;
+    width: 30px; height: 30px; font-size: 14px; cursor: pointer; color: #5B5444; }
+  .app-root-training .calWeekdays { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 4px; }
+  .app-root-training .calWeekday { text-align: center; font-size: 11px; color: #B7AE94; padding: 4px 0; }
+  .app-root-training .calGrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .app-root-training .calCell { aspect-ratio: 1; border-radius: 10px; border: none; background: #F7F4ED;
+    font-size: 13px; color: #3D3A30; cursor: pointer; position: relative;
+    display: flex; align-items: center; justify-content: center; }
+  .app-root-training .calCell.empty { background: transparent; cursor: default; }
+  .app-root-training .calCell.inSelectedWeek { background: #F0E4D8; }
+  .app-root-training .calCell.today { box-shadow: 0 0 0 1.5px var(--accent, #B5764A) inset; }
+  .app-root-training .calLegend { font-size: 11px; color: #8A7B5E; margin-top: 12px; }
+</style>
+<div id="app-root-training" class="app-root-training">
+
+<div class="container">
+  <div class="header">
+    <div>
+      <div class="eyebrow">低精力适配周</div>
+      <h1>训练 · 睡眠记录</h1>
+    </div>
+    <div class="weekNav">
+      <button class="navBtn" id="training_prevWeek">←</button>
+      <button class="weekLabel" id="training_weekLabel"></button>
+      <button class="navBtn" id="training_nextWeek">→</button>
+      <button class="themeBtn" id="training_themeBtn">🎨</button>
+    </div>
+  </div>
+
+  <div class="summaryRow">
+    <div class="summaryCard">
+      <div class="summaryNum" id="training_completedCount">0/7</div>
+      <div class="summaryLabel">本周完成</div>
+    </div>
+    <div class="summaryCard">
+      <div class="summaryNum" id="training_avgEnergy">—</div>
+      <div class="summaryLabel">平均精力</div>
+    </div>
+  </div>
+
+  <div class="dayStrip" id="training_dayStrip"></div>
+
+  <div class="card">
+    <div class="cardHeadRow">
+      <h2 class="cardTitle" id="training_cardTitle"></h2>
+      <div class="headActions">
+        <button class="editBtn" id="training_editBtn">编辑</button>
+        <label class="doneToggle">
+          <input type="checkbox" id="training_doneCheckbox" />
+          完成训练
+        </label>
+      </div>
+    </div>
+    <ul class="itemList" id="training_itemList"></ul>
+
+    <div class="editPanel" id="training_editPanel" style="display:none;">
+      <div class="fieldGroup">
+        <div class="fieldLabel">训练标题</div>
+        <input type="text" id="training_planLabelInput" class="textInput" />
+      </div>
+      <div class="fieldGroup">
+        <div class="fieldLabel">动作列表</div>
+        <div id="training_editItemList"></div>
+        <button class="addItemBtn" id="training_addItemBtn">+ 添加动作</button>
+      </div>
+      <div class="editActionsRow">
+        <button class="saveEditBtn" id="training_saveEditBtn">保存修改</button>
+        <button class="cancelEditBtn" id="training_cancelEditBtn">取消</button>
+      </div>
+    </div>
+
+    <div class="fieldGroup">
+      <div class="fieldLabel">今日精力</div>
+      <div class="scaleRow" id="training_energyRow"></div>
+    </div>
+
+    <div class="fieldGroup">
+      <div class="fieldLabel">昨晚睡眠</div>
+      <div class="scaleRow" id="training_sleepRow"></div>
+    </div>
+
+    <div class="fieldGroup">
+      <div class="fieldLabel">备注（口渴 / 憋尿醒 / 做梦 / 其他感受）</div>
+      <textarea id="training_noteInput" placeholder="记录今天的身体感受……"></textarea>
+    </div>
+
+    <div class="saveHint" id="training_saveHint"></div>
+  </div>
+</div>
+
+<div class="overlay" id="training_themeOverlay">
+  <div class="themePanel">
+    <h3 class="themePanelTitle">外观设置</h3>
+
+    <div class="themeSectionLabel">主题色</div>
+    <div class="swatchRow" id="training_colorSwatches"></div>
+
+    <div class="themeSectionLabel">壁纸</div>
+    <div class="wallpaperGrid" id="training_wallpaperGrid">
+      <button class="uploadBtn" id="training_uploadWallpaperBtn">+</button>
+    </div>
+    <input type="file" id="training_wallpaperFileInput" accept="image/*" />
+
+    <button class="closeThemeBtn" id="training_closeThemeBtn">完成</button>
+  </div>
+</div>
+
+<div class="overlay" id="training_calOverlay">
+  <div class="calPanel">
+    <div class="calHeader">
+      <button class="calNavBtn" id="training_calPrevMonth">←</button>
+      <div class="calMonthLabel" id="training_calMonthLabel"></div>
+      <button class="calNavBtn" id="training_calNextMonth">→</button>
+    </div>
+    <div class="calWeekdays">
+      <div class="calWeekday">一</div><div class="calWeekday">二</div><div class="calWeekday">三</div>
+      <div class="calWeekday">四</div><div class="calWeekday">五</div><div class="calWeekday">六</div>
+      <div class="calWeekday">日</div>
+    </div>
+    <div class="calGrid" id="training_calGrid"></div>
+    <div class="calLegend">点任意一天，跳到该天所在的那一周</div>
+  </div>
+</div>
+
+<script>
+(function() {
+
+const DAYS = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+const DEFAULT_PLANS = {
+  '周一': { label: '力量Ⓐ 下肢', items: ['高脚杯深蹲 2×12', '罗马尼亚硬拉 2×12', '臀桥 2×15'] },
+  '周二': { label: '二区间有氧', items: ['快走 20分钟（轻度）'] },
+  '周三': { label: '力量Ⓑ 上肢肩背', items: ['俯身划船 2×12', '肩外旋 2×15', '地板卧推 2×12'] },
+  '周四': { label: '休息 / 拉伸', items: ['可直接跳过有氧', '轻度拉伸（可选）'] },
+  '周五': { label: '力量Ⓒ 核心骨盆', items: ['箭步蹲 2×10/侧', '平板支撑 2×30秒', '死虫式 2×10'] },
+  '周六': { label: '休息', items: ['完全休息'] },
+  '周日': { label: '休息', items: ['完全休息'] },
+};
+const ENERGY_LABELS = ['很差', '偏差', '一般', '还行', '不错'];
+const SLEEP_LABELS = ['几乎没睡', '断断续续', '一般', '比较稳', '很安稳'];
+const STORAGE_PREFIX = 'training_tracker_week_';
+const PLANS_KEY = 'training_tracker_plans';
+const THEME_KEY = 'training_tracker_theme';
+const WALLPAPER_SELECTED_KEY = 'training_tracker_wallpaper_selected';
+const WALLPAPERS_KEY = 'training_tracker_wallpapers';
+
+const COLOR_THEMES = [
+  { name: '燕麦', accent: '#B5764A', bg: '#F6F4EF', text: '#2B2B26' },
+  { name: '蜜桃', accent: '#C98A99', bg: '#FBF5F2', text: '#3D2B2E' },
+  { name: '鼠尾草', accent: '#7C9885', bg: '#F3F6F1', text: '#2C342D' },
+  { name: '薰衣草', accent: '#9D8AC9', bg: '#F5F2FA', text: '#2E2A3D' },
+  { name: '雾蓝', accent: '#6E93A8', bg: '#EFF5F7', text: '#222E33' },
+  { name: '墨夜', accent: '#D9A05B', bg: '#22242B', text: '#EDEAE2' },
+];
+
+const PRESET_WALLPAPERS = [
+  { name: '无', value: 'none' },
+  { name: '渐变燕麦', value: 'linear-gradient(160deg, #F8F3E9 0%, #F6F4EF 50%, #EFE7D8 100%)' },
+  { name: '渐变粉', value: 'linear-gradient(160deg, #FDEDEF 0%, #FBF5F2 50%, #F3E9E4 100%)' },
+  { name: '渐变绿', value: 'linear-gradient(160deg, #EAF2E8 0%, #F3F6F1 50%, #E6EFE3 100%)' },
+  { name: '渐变蓝', value: 'linear-gradient(160deg, #E6F0F4 0%, #EFF5F7 50%, #DCE9EE 100%)' },
+];
+
+let theme = COLOR_THEMES[0];
+let wallpaper = 'none';
+let customWallpapers = [];
+
+let PLANS = {};
+
+function loadPlans() {
+  try {
+    const raw = localStorage.getItem(PLANS_KEY);
+    PLANS = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(DEFAULT_PLANS));
+  } catch (e) {
+    PLANS = JSON.parse(JSON.stringify(DEFAULT_PLANS));
+  }
+}
+
+function savePlans() {
+  try {
+    localStorage.setItem(PLANS_KEY, JSON.stringify(PLANS));
+  } catch (e) {
+    console.error('保存训练计划失败', e);
+  }
+}
+
+function loadTheme() {
+  try {
+    const t = localStorage.getItem(THEME_KEY);
+    if (t) theme = JSON.parse(t);
+  } catch (e) {}
+  try {
+    const w = localStorage.getItem(WALLPAPER_SELECTED_KEY);
+    if (w) wallpaper = w;
+  } catch (e) {}
+  try {
+    const cw = localStorage.getItem(WALLPAPERS_KEY);
+    customWallpapers = cw ? JSON.parse(cw) : [];
+  } catch (e) { customWallpapers = []; }
+}
+
+function saveTheme() { localStorage.setItem(THEME_KEY, JSON.stringify(theme)); }
+function saveWallpaperSelection() { localStorage.setItem(WALLPAPER_SELECTED_KEY, wallpaper); }
+function saveCustomWallpapers() { localStorage.setItem(WALLPAPERS_KEY, JSON.stringify(customWallpapers)); }
+
+function applyTheme() {
+  document.getElementById('app-root-training').style.setProperty('--accent', theme.accent);
+  document.getElementById('app-root-training').style.setProperty('--bg', theme.bg);
+  document.getElementById('app-root-training').style.setProperty('--text', theme.text);
+  let bgImage = 'none';
+  if (wallpaper && wallpaper !== 'none') {
+    bgImage = wallpaper.startsWith('data:image') ? `url(${wallpaper})` : wallpaper;
+  }
+  document.getElementById('app-root-training').style.setProperty('--bg-image', bgImage);
+}
+
+function renderThemePanel() {
+  const colorRow = document.getElementById('training_colorSwatches');
+  colorRow.innerHTML = '';
+  COLOR_THEMES.forEach(t => {
+    const sw = document.createElement('button');
+    sw.className = 'swatch' + (theme.name === t.name ? ' selected' : '');
+    sw.style.background = t.accent;
+    sw.title = t.name;
+    sw.onclick = () => { theme = t; saveTheme(); applyTheme(); renderThemePanel(); };
+    colorRow.appendChild(sw);
+  });
+
+  const wallGrid = document.getElementById('training_wallpaperGrid');
+  wallGrid.innerHTML = '';
+  const uploadBtn = document.createElement('button');
+  uploadBtn.className = 'uploadBtn';
+  uploadBtn.textContent = '+';
+  uploadBtn.onclick = () => document.getElementById('training_wallpaperFileInput').click();
+  wallGrid.appendChild(uploadBtn);
+
+  PRESET_WALLPAPERS.forEach(w => {
+    const thumb = document.createElement('button');
+    thumb.className = 'wallpaperThumb' + (wallpaper === w.value ? ' selected' : '') + (w.value === 'none' ? ' none' : '');
+    if (w.value === 'none') {
+      thumb.textContent = '无';
+    } else {
+      thumb.style.backgroundImage = w.value;
+    }
+    thumb.onclick = () => { wallpaper = w.value; saveWallpaperSelection(); applyTheme(); renderThemePanel(); };
+    wallGrid.appendChild(thumb);
+  });
+
+  customWallpapers.forEach((dataUrl) => {
+    const thumb = document.createElement('button');
+    thumb.className = 'wallpaperThumb' + (wallpaper === dataUrl ? ' selected' : '');
+    thumb.style.backgroundImage = `url(${dataUrl})`;
+    thumb.onclick = () => { wallpaper = dataUrl; saveWallpaperSelection(); applyTheme(); renderThemePanel(); };
+    wallGrid.appendChild(thumb);
+  });
+}
+
+function getWeekKey(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - (day === 0 ? 6 : day - 1);
+  const monday = new Date(d.setDate(diff));
+  return monday.toISOString().slice(0, 10);
+}
+function todayLabel() {
+  const idx = new Date().getDay();
+  return DAYS[idx === 0 ? 6 : idx - 1];
+}
+
+let weekKey = getWeekKey(new Date());
+let activeDay = todayLabel();
+let records = {};
+let isEditing = false;
+let draftItems = [];
+let calMonth = new Date();
+
+function loadWeek() {
+  try {
+    const raw = localStorage.getItem(STORAGE_PREFIX + weekKey);
+    records = raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    records = {};
+  }
+}
+
+function saveWeek() {
+  try {
+    localStorage.setItem(STORAGE_PREFIX + weekKey, JSON.stringify(records));
+    document.getElementById('training_saveHint').textContent = '已自动保存';
+    setTimeout(() => { document.getElementById('training_saveHint').textContent = ''; }, 1500);
+  } catch (e) {
+    document.getElementById('training_saveHint').textContent = '保存失败';
+  }
+}
+
+function updateDay(day, patch) {
+  records[day] = { ...(records[day] || {}), ...patch };
+  saveWeek();
+  renderSummary();
+  renderDayStrip();
+  renderCard();
+}
+
+function updateDaySilent(day, patch) {
+  records[day] = { ...(records[day] || {}), ...patch };
+  saveWeek();
+  renderSummary();
+  renderDayStrip();
+}
+
+function renderHeader() {
+  document.getElementById('training_weekLabel').textContent = weekKey + ' 周';
+}
+
+function dateKeyStr(d) { return d.toISOString().slice(0, 10); }
+
+function renderCalendar() {
+  const year = calMonth.getFullYear(), month = calMonth.getMonth();
+  document.getElementById('training_calMonthLabel').textContent = `${year}年${month + 1}月`;
+  const firstDay = new Date(year, month, 1);
+  const startOffset = (firstDay.getDay() + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayStr = dateKeyStr(new Date());
+  const grid = document.getElementById('training_calGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < startOffset; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'calCell empty';
+    grid.appendChild(cell);
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(year, month, day);
+    const dStr = dateKeyStr(d);
+    const dWeekKey = getWeekKey(new Date(d));
+    const cell = document.createElement('button');
+    cell.className = 'calCell' + (dStr === todayStr ? ' today' : '') + (dWeekKey === weekKey ? ' inSelectedWeek' : '');
+    cell.textContent = day;
+    cell.onclick = () => {
+      weekKey = dWeekKey;
+      loadWeek();
+      renderAll();
+      document.getElementById('training_calOverlay').classList.remove('open');
+    };
+    grid.appendChild(cell);
+  }
+}
+
+function openCalendar() {
+  calMonth = new Date(weekKey);
+  renderCalendar();
+  document.getElementById('training_calOverlay').classList.add('open');
+}
+
+function renderSummary() {
+  const completed = DAYS.filter(d => records[d]?.done).length;
+  document.getElementById('training_completedCount').textContent = completed + '/7';
+  const vals = DAYS.map(d => records[d]?.energy).filter(v => typeof v === 'number');
+  const avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '—';
+  document.getElementById('training_avgEnergy').textContent = avg;
+}
+
+function renderDayStrip() {
+  const strip = document.getElementById('training_dayStrip');
+  strip.innerHTML = '';
+  DAYS.forEach(day => {
+    const r = records[day];
+    const btn = document.createElement('button');
+    btn.className = 'dayPill' + (day === activeDay ? ' active' : '') + (r?.done ? ' done' : '');
+    btn.innerHTML = '<span>' + day + '</span>' + (r?.done ? '<span class="checkDot"></span>' : '');
+    btn.onclick = () => { activeDay = day; isEditing = false; renderAll(); };
+    strip.appendChild(btn);
+  });
+}
+
+function renderCard() {
+  const plan = PLANS[activeDay];
+  const rec = records[activeDay] || {};
+  document.getElementById('training_cardTitle').textContent = activeDay + ' · ' + plan.label;
+  document.getElementById('training_doneCheckbox').checked = !!rec.done;
+  document.getElementById('training_doneCheckbox').onchange = (e) => updateDay(activeDay, { done: e.target.checked });
+
+  const itemList = document.getElementById('training_itemList');
+  const editPanel = document.getElementById('training_editPanel');
+
+  if (isEditing) {
+    itemList.style.display = 'none';
+    editPanel.style.display = 'block';
+    document.getElementById('training_planLabelInput').value = plan.label;
+    renderEditItems();
+  } else {
+    itemList.style.display = 'block';
+    editPanel.style.display = 'none';
+    itemList.innerHTML = '';
+    plan.items.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'itemRow';
+      li.innerHTML = '<span class="itemDash">—</span>' + escapeHtml(item);
+      itemList.appendChild(li);
+    });
+  }
+
+  const energyRow = document.getElementById('training_energyRow');
+  energyRow.innerHTML = '';
+  ENERGY_LABELS.forEach((label, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'scaleBtn' + (rec.energy === i + 1 ? ' active' : '');
+    btn.textContent = label;
+    btn.onclick = () => updateDay(activeDay, { energy: i + 1 });
+    energyRow.appendChild(btn);
+  });
+
+  const sleepRow = document.getElementById('training_sleepRow');
+  sleepRow.innerHTML = '';
+  SLEEP_LABELS.forEach((label, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'scaleBtn' + (rec.sleep === i + 1 ? ' active' : '');
+    btn.textContent = label;
+    btn.onclick = () => updateDay(activeDay, { sleep: i + 1 });
+    sleepRow.appendChild(btn);
+  });
+
+  const noteInput = document.getElementById('training_noteInput');
+  noteInput.value = rec.note || '';
+  noteInput.oninput = (e) => updateDaySilent(activeDay, { note: e.target.value });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function renderEditItems() {
+  const container = document.getElementById('training_editItemList');
+  container.innerHTML = '';
+  draftItems.forEach((item, idx) => {
+    const row = document.createElement('div');
+    row.className = 'editItemRow';
+    const input = document.createElement('input');
+    input.className = 'textInput';
+    input.value = item;
+    input.oninput = (e) => { draftItems[idx] = e.target.value; };
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'removeItemBtn';
+    removeBtn.textContent = '×';
+    removeBtn.onclick = () => { draftItems.splice(idx, 1); renderEditItems(); };
+    row.appendChild(input);
+    row.appendChild(removeBtn);
+    container.appendChild(row);
+  });
+}
+
+function enterEditMode() {
+  isEditing = true;
+  draftItems = [...PLANS[activeDay].items];
+  renderCard();
+}
+
+function exitEditMode() {
+  isEditing = false;
+  renderCard();
+}
+
+function saveEdit() {
+  const newLabel = document.getElementById('training_planLabelInput').value.trim() || PLANS[activeDay].label;
+  const cleanedItems = draftItems.map(i => i.trim()).filter(Boolean);
+  PLANS[activeDay] = { label: newLabel, items: cleanedItems.length ? cleanedItems : ['（暂无动作，点编辑添加）'] };
+  savePlans();
+  isEditing = false;
+  renderCard();
+}
+
+function renderAll() {
+  renderHeader();
+  renderSummary();
+  renderDayStrip();
+  renderCard();
+  applyTheme();
+}
+
+document.getElementById('training_prevWeek').onclick = () => {
+  const d = new Date(weekKey);
+  d.setDate(d.getDate() - 7);
+  weekKey = getWeekKey(d);
+  loadWeek();
+  renderAll();
+};
+document.getElementById('training_nextWeek').onclick = () => {
+  const d = new Date(weekKey);
+  d.setDate(d.getDate() + 7);
+  weekKey = getWeekKey(d);
+  loadWeek();
+  renderAll();
+};
+
+document.getElementById('training_editBtn').onclick = enterEditMode;
+document.getElementById('training_cancelEditBtn').onclick = exitEditMode;
+document.getElementById('training_saveEditBtn').onclick = saveEdit;
+document.getElementById('training_addItemBtn').onclick = () => { draftItems.push(''); renderEditItems(); };
+
+document.getElementById('training_weekLabel').onclick = openCalendar;
+const calOverlay = document.getElementById('training_calOverlay');
+calOverlay.onclick = (e) => { if (e.target === calOverlay) calOverlay.classList.remove('open'); };
+document.getElementById('training_calPrevMonth').onclick = () => { calMonth.setMonth(calMonth.getMonth() - 1); renderCalendar(); };
+document.getElementById('training_calNextMonth').onclick = () => { calMonth.setMonth(calMonth.getMonth() + 1); renderCalendar(); };
+
+const themeOverlay = document.getElementById('training_themeOverlay');
+document.getElementById('training_themeBtn').onclick = () => { renderThemePanel(); themeOverlay.classList.add('open'); };
+document.getElementById('training_closeThemeBtn').onclick = () => themeOverlay.classList.remove('open');
+themeOverlay.onclick = (e) => { if (e.target === themeOverlay) themeOverlay.classList.remove('open'); };
+
+document.getElementById('training_wallpaperFileInput').onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    customWallpapers.push(dataUrl);
+    try {
+      saveCustomWallpapers();
+    } catch (err) {
+      alert('图片太大，存储失败，换一张小一点的图试试');
+      customWallpapers.pop();
+      return;
+    }
+    wallpaper = dataUrl;
+    saveWallpaperSelection();
+    applyTheme();
+    renderThemePanel();
+  };
+  reader.readAsDataURL(file);
+};
+
+loadPlans();
+loadTheme();
+loadWeek();
+renderAll();
+
+})();
+</script>
+
+</div>
+</div>
+
+<div class="appPane" id="pane-skincare">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  .app-root-skincare { margin: 0; min-height: 100%; }
+  .app-root-skincare { font-family: "PingFang SC", "Helvetica Neue", -apple-system, sans-serif;
+    color: var(--text, #2B2B26);
+    padding: 24px 16px calc(48px + env(safe-area-inset-bottom));
+    background-color: var(--bg, #FBF5F2);
+    background-image: var(--bg-image, none);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    transition: background-color 0.3s;
+    min-height: 100vh; }
+  .app-root-skincare .container { max-width: 480px; margin: 0 auto; }
+  .app-root-skincare .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 14px; }
+  .app-root-skincare .eyebrow { font-size: 12px; letter-spacing: 0.08em; color: var(--accent, #C98A99); margin-bottom: 4px; }
+  .app-root-skincare h1 { font-size: 22px; font-weight: 700; margin: 0; }
+  .app-root-skincare .headerRight { display: flex; align-items: center; gap: 8px; }
+  .app-root-skincare .themeBtn { border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(6px); border-radius: 10px; width: 36px; height: 36px;
+    font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .app-root-skincare .dateNav { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; }
+  .app-root-skincare .dateNavBtn { border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(6px); border-radius: 8px; width: 30px; height: 30px;
+    font-size: 14px; cursor: pointer; color: var(--text, #5B5444); flex-shrink: 0; }
+  .app-root-skincare .dateNavLabel { flex: 1; text-align: center; font-size: 13px; color: var(--accent, #C98A99);
+    background: rgba(255,255,255,0.6); border-radius: 8px; padding: 6px 0;
+    border: none; cursor: pointer; font-family: inherit; }
+  .app-root-skincare .todayBtn { border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.7);
+    border-radius: 8px; padding: 0 10px; height: 30px; font-size: 12px;
+    color: var(--accent, #C98A99); cursor: pointer; flex-shrink: 0; }
+  .app-root-skincare .toggleRow { display: flex; gap: 8px; margin-bottom: 16px; }
+  .app-root-skincare .toggleBtn { flex: 1; padding: 10px 0; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08);
+    background: rgba(255,255,255,0.65); backdrop-filter: blur(6px);
+    color: var(--text, #2B2B26); font-size: 14px; font-weight: 600; cursor: pointer; }
+  .app-root-skincare .toggleBtn.active { background: var(--accent, #C98A99); color: #fff; border-color: var(--accent, #C98A99); }
+  .app-root-skincare .card { background: rgba(255,255,255,0.78); backdrop-filter: blur(10px);
+    border-radius: 18px; padding: 20px; border: 1px solid rgba(0,0,0,0.06);
+    margin-bottom: 14px; }
+  .app-root-skincare .cardHeadRow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .app-root-skincare .cardTitle { font-size: 15px; font-weight: 700; margin: 0; }
+  .app-root-skincare .editBtn { font-size: 11px; padding: 4px 9px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);
+    background: transparent; color: var(--accent, #C98A99); cursor: pointer; }
+  .app-root-skincare .stepRow { display: flex; align-items: center; gap: 10px; padding: 9px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .app-root-skincare .stepRow:last-child { border-bottom: none; }
+  .app-root-skincare .stepCheck { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--accent, #C98A99);
+    flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    background: transparent; }
+  .app-root-skincare .stepCheck.checked { background: var(--accent, #C98A99); }
+  .app-root-skincare .stepCheck.checked::after { content: '✓'; color: #fff; font-size: 12px; }
+  .app-root-skincare .stepText { font-size: 14px; flex: 1; }
+  .app-root-skincare .stepText.checked { text-decoration: line-through; opacity: 0.5; }
+  .app-root-skincare .editPanel { margin-top: 4px; }
+  .app-root-skincare .textInput { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);
+    font-size: 14px; font-family: inherit; box-sizing: border-box; background: rgba(255,255,255,0.8); }
+  .app-root-skincare .editItemRow { display: flex; gap: 6px; margin-bottom: 6px; }
+  .app-root-skincare .editItemRow input { flex: 1; }
+  .app-root-skincare .removeItemBtn { border: 1px solid rgba(0,0,0,0.1); background: #fff; color: var(--accent, #C98A99);
+    border-radius: 8px; width: 32px; font-size: 16px; cursor: pointer; flex-shrink: 0; }
+  .app-root-skincare .addItemBtn { font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 1px dashed var(--accent, #C98A99);
+    background: transparent; color: var(--accent, #C98A99); cursor: pointer; margin-top: 4px; }
+  .app-root-skincare .editActionsRow { display: flex; gap: 8px; margin-top: 12px; }
+  .app-root-skincare .saveEditBtn { flex: 1; padding: 9px 0; border-radius: 8px; border: none; background: var(--accent, #C98A99);
+    color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .app-root-skincare .cancelEditBtn { flex: 1; padding: 9px 0; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: #fff;
+    color: #8A7B5E; font-size: 13px; cursor: pointer; }
+  .app-root-skincare .noteArea { width: 100%; min-height: 50px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08);
+    padding: 9px; font-size: 13px; font-family: inherit; resize: vertical; background: rgba(255,255,255,0.7); }
+  .app-root-skincare .fieldLabel { font-size: 11px; color: var(--accent, #C98A99); margin-bottom: 6px; }
+  .app-root-skincare .streakRow { display: flex; gap: 10px; margin-bottom: 16px; }
+  .app-root-skincare .streakCard { flex: 1; background: rgba(255,255,255,0.7); backdrop-filter: blur(8px);
+    border-radius: 14px; padding: 12px; text-align: center; border: 1px solid rgba(0,0,0,0.05); }
+  .app-root-skincare .streakNum { font-size: 22px; font-weight: 700; color: var(--accent, #C98A99); }
+  .app-root-skincare .streakLabel { font-size: 10px; color: #8A7B5E; margin-top: 2px; }
+  .app-root-skincare .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none;
+    align-items: flex-end; justify-content: center; z-index: 50; }
+  .app-root-skincare .overlay.open { display: flex; }
+  .app-root-skincare .themePanel { background: #fff; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0;
+    padding: 20px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 80vh; overflow-y: auto; }
+  .app-root-skincare .themePanelTitle { font-size: 16px; font-weight: 700; margin: 0 0 14px; color: #2B2B26; }
+  .app-root-skincare .themeSectionLabel { font-size: 12px; color: #8A7B5E; margin: 16px 0 8px; }
+  .app-root-skincare .swatchRow { display: flex; gap: 10px; flex-wrap: wrap; }
+  .app-root-skincare .swatch { width: 44px; height: 44px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;
+    position: relative; flex-shrink: 0; }
+  .app-root-skincare .swatch.selected { border-color: #2B2B26; }
+  .app-root-skincare .wallpaperGrid { display: flex; gap: 10px; flex-wrap: wrap; }
+  .app-root-skincare .wallpaperThumb { width: 68px; height: 68px; border-radius: 12px; cursor: pointer; border: 2px solid transparent;
+    background-size: cover; background-position: center; flex-shrink: 0; }
+  .app-root-skincare .wallpaperThumb.selected { border-color: #2B2B26; }
+  .app-root-skincare .wallpaperThumb.none { display: flex; align-items: center; justify-content: center; font-size: 11px; color: #8A7B5E; background: #F2EFE6; }
+  .app-root-skincare .uploadBtn { width: 68px; height: 68px; border-radius: 12px; border: 1.5px dashed #C9A06B;
+    display: flex; align-items: center; justify-content: center; font-size: 20px; color: #C9A06B;
+    cursor: pointer; flex-shrink: 0; background: transparent; }
+  .app-root-skincare .closeThemeBtn { width: 100%; padding: 11px 0; border-radius: 10px; border: none; margin-top: 18px;
+    background: var(--accent, #C98A99); color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .app-root-skincare input[type="file"] { display: none; }
+  .app-root-skincare .calPanel { background: #fff; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0;
+    padding: 20px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; }
+  .app-root-skincare .calHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .app-root-skincare .calMonthLabel { font-size: 16px; font-weight: 700; color: #2B2B26; }
+  .app-root-skincare .calNavBtn { border: 1px solid rgba(0,0,0,0.08); background: #fff; border-radius: 8px;
+    width: 30px; height: 30px; font-size: 14px; cursor: pointer; color: #5B5444; }
+  .app-root-skincare .calWeekdays { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 4px; }
+  .app-root-skincare .calWeekday { text-align: center; font-size: 11px; color: #B7AE94; padding: 4px 0; }
+  .app-root-skincare .calGrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .app-root-skincare .calCell { aspect-ratio: 1; border-radius: 10px; border: none; background: #F7F4ED;
+    font-size: 13px; color: #3D3A30; cursor: pointer; position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+  .app-root-skincare .calCell.empty { background: transparent; cursor: default; }
+  .app-root-skincare .calCell.future { color: #D8D2C2; cursor: not-allowed; }
+  .app-root-skincare .calCell.selected { background: var(--accent, #B5764A); color: #fff; }
+  .app-root-skincare .calCell.today:not(.selected) { box-shadow: 0 0 0 1.5px var(--accent, #B5764A) inset; }
+  .app-root-skincare .calDot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent, #B5764A); }
+  .app-root-skincare .calCell.selected .calDot { background: #fff; }
+  .app-root-skincare .calDotRow { display: flex; gap: 2px; }
+  .app-root-skincare .calLegend { display: flex; gap: 14px; margin-top: 14px; font-size: 11px; color: #8A7B5E; align-items: center; }
+  .app-root-skincare .calLegendDot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+</style>
+<div id="app-root-skincare" class="app-root-skincare">
+
+<div class="container">
+  <div class="header">
+    <div>
+      <div class="eyebrow" id="skincare_eyebrowLabel">今日护肤</div>
+      <h1 id="skincare_dateTitle">护肤打卡</h1>
+    </div>
+    <div class="headerRight">
+      <button class="themeBtn" id="skincare_themeBtn">🎨</button>
+    </div>
+  </div>
+
+  <div class="dateNav">
+    <button class="dateNavBtn" id="skincare_prevDayBtn">←</button>
+    <button class="dateNavLabel" id="skincare_dateNavLabel"></button>
+    <button class="dateNavBtn" id="skincare_nextDayBtn">→</button>
+    <button class="todayBtn" id="skincare_todayBtn">今天</button>
+  </div>
+
+  <div class="streakRow">
+    <div class="streakCard">
+      <div class="streakNum" id="skincare_streakNum">0</div>
+      <div class="streakLabel">连续打卡天数</div>
+    </div>
+    <div class="streakCard">
+      <div class="streakNum" id="skincare_totalDays">0</div>
+      <div class="streakLabel">累计记录天数</div>
+    </div>
+  </div>
+
+  <div class="toggleRow">
+    <button class="toggleBtn" id="skincare_amBtn">早间 AM</button>
+    <button class="toggleBtn" id="skincare_pmBtn">晚间 PM</button>
+  </div>
+
+  <div class="card">
+    <div class="cardHeadRow">
+      <h2 class="cardTitle" id="skincare_routineTitle"></h2>
+      <button class="editBtn" id="skincare_editBtn">编辑步骤</button>
+    </div>
+
+    <div id="skincare_stepListWrap">
+      <div id="skincare_stepList"></div>
+    </div>
+
+    <div class="editPanel" id="skincare_editPanel" style="display:none;">
+      <div id="skincare_editItemList"></div>
+      <button class="addItemBtn" id="skincare_addItemBtn">+ 添加步骤</button>
+      <div class="editActionsRow">
+        <button class="saveEditBtn" id="skincare_saveEditBtn">保存</button>
+        <button class="cancelEditBtn" id="skincare_cancelEditBtn">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="fieldLabel">今日皮肤状态备注（泛红 / 爆痘 / 脱皮 / 其他）</div>
+    <textarea class="noteArea" id="skincare_noteInput" placeholder="记录今天的皮肤反应……"></textarea>
+  </div>
+</div>
+
+<div class="overlay" id="skincare_themeOverlay">
+  <div class="themePanel">
+    <h3 class="themePanelTitle">外观设置</h3>
+
+    <div class="themeSectionLabel">主题色</div>
+    <div class="swatchRow" id="skincare_colorSwatches"></div>
+
+    <div class="themeSectionLabel">壁纸</div>
+    <div class="wallpaperGrid" id="skincare_wallpaperGrid">
+      <button class="uploadBtn" id="skincare_uploadWallpaperBtn">+</button>
+    </div>
+    <input type="file" id="skincare_wallpaperFileInput" accept="image/*" />
+
+    <button class="closeThemeBtn" id="skincare_closeThemeBtn">完成</button>
+  </div>
+</div>
+
+<div class="overlay" id="skincare_calOverlay">
+  <div class="calPanel">
+    <div class="calHeader">
+      <button class="calNavBtn" id="skincare_calPrevMonth">←</button>
+      <div class="calMonthLabel" id="skincare_calMonthLabel"></div>
+      <button class="calNavBtn" id="skincare_calNextMonth">→</button>
+    </div>
+    <div class="calWeekdays">
+      <div class="calWeekday">一</div><div class="calWeekday">二</div><div class="calWeekday">三</div>
+      <div class="calWeekday">四</div><div class="calWeekday">五</div><div class="calWeekday">六</div>
+      <div class="calWeekday">日</div>
+    </div>
+    <div class="calGrid" id="skincare_calGrid"></div>
+    <div class="calLegend">
+      <span><span class="calLegendDot" style="background:var(--accent,#B5764A)"></span>有打卡记录</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+
+const STORAGE_PREFIX = 'skincare_tracker_day_';
+const ROUTINES_KEY = 'skincare_tracker_routines';
+const THEME_KEY = 'skincare_tracker_theme';
+const WALLPAPERS_KEY = 'skincare_tracker_wallpapers';
+
+const DEFAULT_ROUTINES = {
+  am: {
+    label: '早间护肤',
+    items: ['洁面', '烟酰胺精华', 'CeraVe保湿乳', 'Biore防晒'],
+  },
+  pm: {
+    label: '晚间护肤（A醇/酸轮替）',
+    items: ['卸妆/洁面', '阿达帕林 或 BHA+杜鹃花酸（轮替）', '保湿乳/CeraVe', '身体乳（尿素/乳酸成分，针对鸡皮）'],
+  },
+};
+
+const COLOR_THEMES = [
+  { name: '蜜桃', accent: '#C98A99', bg: '#FBF5F2', text: '#3D2B2E' },
+  { name: '鼠尾草', accent: '#7C9885', bg: '#F3F6F1', text: '#2C342D' },
+  { name: '燕麦', accent: '#B5764A', bg: '#F6F1E8', text: '#2B2620' },
+  { name: '薰衣草', accent: '#9D8AC9', bg: '#F5F2FA', text: '#2E2A3D' },
+  { name: '雾蓝', accent: '#6E93A8', bg: '#EFF5F7', text: '#222E33' },
+  { name: '墨夜', accent: '#D9A05B', bg: '#22242B', text: '#EDEAE2' },
+];
+
+const PRESET_WALLPAPERS = [
+  { name: '无', value: 'none' },
+  { name: '渐变粉', value: 'linear-gradient(160deg, #FDEDEF 0%, #FBF5F2 50%, #F3E9E4 100%)' },
+  { name: '渐变绿', value: 'linear-gradient(160deg, #EAF2E8 0%, #F3F6F1 50%, #E6EFE3 100%)' },
+  { name: '渐变蓝', value: 'linear-gradient(160deg, #E6F0F4 0%, #EFF5F7 50%, #DCE9EE 100%)' },
+  { name: '柔雾', value: 'radial-gradient(circle at 30% 20%, #FFF7F0 0%, #F2ECE4 60%, #E8DED2 100%)' },
+];
+
+let routines = {};
+let theme = COLOR_THEMES[0];
+let wallpaper = 'none';
+let customWallpapers = [];
+let activeTab = 'am';
+let isEditing = false;
+let draftItems = [];
+let records = {};
+let currentDate = new Date();
+let calMonth = new Date();
+
+function dateKey(d) {
+  return d.toISOString().slice(0, 10);
+}
+function todayKey() {
+  return dateKey(new Date());
+}
+function isToday(d) {
+  return dateKey(d) === todayKey();
+}
+
+function loadRecordsForCurrentDate() {
+  try {
+    const raw = localStorage.getItem(STORAGE_PREFIX + dateKey(currentDate));
+    records = raw ? JSON.parse(raw) : {};
+  } catch (e) { records = {}; }
+}
+
+function loadAll() {
+  try {
+    const r = localStorage.getItem(ROUTINES_KEY);
+    routines = r ? JSON.parse(r) : JSON.parse(JSON.stringify(DEFAULT_ROUTINES));
+  } catch (e) { routines = JSON.parse(JSON.stringify(DEFAULT_ROUTINES)); }
+
+  try {
+    const t = localStorage.getItem(THEME_KEY);
+    if (t) theme = JSON.parse(t);
+  } catch (e) {}
+
+  try {
+    const w = localStorage.getItem('skincare_tracker_wallpaper_selected');
+    if (w) wallpaper = w;
+  } catch (e) {}
+
+  try {
+    const cw = localStorage.getItem(WALLPAPERS_KEY);
+    customWallpapers = cw ? JSON.parse(cw) : [];
+  } catch (e) { customWallpapers = []; }
+
+  loadRecordsForCurrentDate();
+}
+
+function saveRoutines() { localStorage.setItem(ROUTINES_KEY, JSON.stringify(routines)); }
+function saveTheme() { localStorage.setItem(THEME_KEY, JSON.stringify(theme)); }
+function saveWallpaperSelection() { localStorage.setItem('skincare_tracker_wallpaper_selected', wallpaper); }
+function saveCustomWallpapers() { localStorage.setItem(WALLPAPERS_KEY, JSON.stringify(customWallpapers)); }
+function saveRecords() { localStorage.setItem(STORAGE_PREFIX + dateKey(currentDate), JSON.stringify(records)); }
+
+function applyTheme() {
+  document.getElementById('app-root-skincare').style.setProperty('--accent', theme.accent);
+  document.getElementById('app-root-skincare').style.setProperty('--bg', theme.bg);
+  document.getElementById('app-root-skincare').style.setProperty('--text', theme.text);
+  let bgImage = 'none';
+  if (wallpaper && wallpaper !== 'none') {
+    if (wallpaper.startsWith('data:image')) {
+      bgImage = `url(${wallpaper})`;
+    } else {
+      bgImage = wallpaper;
+    }
+  }
+  document.getElementById('app-root-skincare').style.setProperty('--bg-image', bgImage);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function renderHeader() {
+  const opts = { month: 'long', day: 'numeric', weekday: 'short' };
+  document.getElementById('skincare_dateTitle').textContent = currentDate.toLocaleDateString('zh-CN', opts);
+  document.getElementById('skincare_eyebrowLabel').textContent = isToday(currentDate) ? '今日护肤' : '历史记录';
+}
+
+function renderDateNav() {
+  const opts = { month: 'numeric', day: 'numeric', weekday: 'short' };
+  document.getElementById('skincare_dateNavLabel').textContent = currentDate.toLocaleDateString('zh-CN', opts);
+  document.getElementById('skincare_nextDayBtn').disabled = isToday(currentDate);
+  document.getElementById('skincare_nextDayBtn').style.opacity = isToday(currentDate) ? 0.35 : 1;
+  document.getElementById('skincare_todayBtn').style.display = isToday(currentDate) ? 'none' : 'block';
+}
+
+function goToDate(d) {
+  currentDate = d;
+  isEditing = false;
+  loadRecordsForCurrentDate();
+  renderAll();
+}
+
+function dayHasRecord(d) {
+  try {
+    const raw = localStorage.getItem(STORAGE_PREFIX + dateKey(d));
+    if (!raw) return false;
+    const rec = JSON.parse(raw);
+    const amDone = rec.am && Object.values(rec.am).some(v => v === true);
+    const pmDone = rec.pm && Object.values(rec.pm).some(v => v === true);
+    return !!(amDone || pmDone);
+  } catch (e) { return false; }
+}
+
+function renderCalendar() {
+  const year = calMonth.getFullYear();
+  const month = calMonth.getMonth();
+  document.getElementById('skincare_calMonthLabel').textContent = `${year}年${month + 1}月`;
+
+  const firstDay = new Date(year, month, 1);
+  const startOffset = (firstDay.getDay() + 6) % 7; // Monday = 0
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayStr = todayKey();
+  const selectedStr = dateKey(currentDate);
+
+  const grid = document.getElementById('skincare_calGrid');
+  grid.innerHTML = '';
+
+  for (let i = 0; i < startOffset; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'calCell empty';
+    grid.appendChild(cell);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(year, month, day);
+    const dStr = dateKey(d);
+    const isFuture = dStr > todayStr;
+    const cell = document.createElement('button');
+    cell.className = 'calCell' + (isFuture ? ' future' : '') + (dStr === todayStr ? ' today' : '') + (dStr === selectedStr ? ' selected' : '');
+    const num = document.createElement('span');
+    num.textContent = day;
+    cell.appendChild(num);
+    if (!isFuture && dayHasRecord(d)) {
+      const dotRow = document.createElement('span');
+      dotRow.className = 'calDotRow';
+      const dot = document.createElement('span');
+      dot.className = 'calDot';
+      dotRow.appendChild(dot);
+      cell.appendChild(dotRow);
+    }
+    if (!isFuture) {
+      cell.onclick = () => {
+        goToDate(d);
+        document.getElementById('skincare_calOverlay').classList.remove('open');
+      };
+    } else {
+      cell.disabled = true;
+    }
+    grid.appendChild(cell);
+  }
+}
+
+function openCalendar() {
+  calMonth = new Date(currentDate);
+  renderCalendar();
+  document.getElementById('skincare_calOverlay').classList.add('open');
+}
+
+function computeStreak() {
+  let streak = 0;
+  let total = 0;
+  const keys = Object.keys(localStorage).filter(k => k.startsWith(STORAGE_PREFIX));
+  total = keys.length;
+  let cursor = new Date();
+  while (true) {
+    const key = STORAGE_PREFIX + cursor.toISOString().slice(0, 10);
+    const raw = localStorage.getItem(key);
+    if (!raw) break;
+    let dayRec;
+    try { dayRec = JSON.parse(raw); } catch (e) { break; }
+    const amDone = dayRec.am && Object.values(dayRec.am).filter(v => v === true).length > 0;
+    const pmDone = dayRec.pm && Object.values(dayRec.pm).filter(v => v === true).length > 0;
+    if (!amDone && !pmDone) break;
+    streak++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return { streak, total };
+}
+
+function renderStreak() {
+  const { streak, total } = computeStreak();
+  document.getElementById('skincare_streakNum').textContent = streak;
+  document.getElementById('skincare_totalDays').textContent = total;
+}
+
+function renderTabs() {
+  document.getElementById('skincare_amBtn').className = 'toggleBtn' + (activeTab === 'am' ? ' active' : '');
+  document.getElementById('skincare_pmBtn').className = 'toggleBtn' + (activeTab === 'pm' ? ' active' : '');
+}
+
+function renderRoutineCard() {
+  const routine = routines[activeTab];
+  document.getElementById('skincare_routineTitle').textContent = routine.label;
+
+  const stepListWrap = document.getElementById('skincare_stepListWrap');
+  const editPanel = document.getElementById('skincare_editPanel');
+
+  if (isEditing) {
+    stepListWrap.style.display = 'none';
+    editPanel.style.display = 'block';
+    renderEditItems();
+  } else {
+    stepListWrap.style.display = 'block';
+    editPanel.style.display = 'none';
+    const stepList = document.getElementById('skincare_stepList');
+    stepList.innerHTML = '';
+    const dayRec = records[activeTab] || {};
+    routine.items.forEach((item, idx) => {
+      const checked = !!dayRec[idx];
+      const row = document.createElement('div');
+      row.className = 'stepRow';
+      const check = document.createElement('button');
+      check.className = 'stepCheck' + (checked ? ' checked' : '');
+      check.onclick = () => toggleStep(idx);
+      const text = document.createElement('span');
+      text.className = 'stepText' + (checked ? ' checked' : '');
+      text.textContent = item;
+      row.appendChild(check);
+      row.appendChild(text);
+      stepList.appendChild(row);
+    });
+  }
+}
+
+function toggleStep(idx) {
+  if (!records[activeTab]) records[activeTab] = {};
+  records[activeTab][idx] = !records[activeTab][idx];
+  saveRecords();
+  renderRoutineCard();
+  renderStreak();
+}
+
+function renderEditItems() {
+  const container = document.getElementById('skincare_editItemList');
+  container.innerHTML = '';
+  draftItems.forEach((item, idx) => {
+    const row = document.createElement('div');
+    row.className = 'editItemRow';
+    const input = document.createElement('input');
+    input.className = 'textInput';
+    input.value = item;
+    input.oninput = (e) => { draftItems[idx] = e.target.value; };
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'removeItemBtn';
+    removeBtn.textContent = '×';
+    removeBtn.onclick = () => { draftItems.splice(idx, 1); renderEditItems(); };
+    row.appendChild(input);
+    row.appendChild(removeBtn);
+    container.appendChild(row);
+  });
+}
+
+function enterEdit() {
+  isEditing = true;
+  draftItems = [...routines[activeTab].items];
+  renderRoutineCard();
+}
+function cancelEdit() {
+  isEditing = false;
+  renderRoutineCard();
+}
+function saveEdit() {
+  const cleaned = draftItems.map(i => i.trim()).filter(Boolean);
+  routines[activeTab].items = cleaned.length ? cleaned : ['（暂无步骤，点编辑添加）'];
+  saveRoutines();
+  isEditing = false;
+  renderRoutineCard();
+}
+
+function renderNote() {
+  document.getElementById('skincare_noteInput').value = records.note || '';
+}
+
+function renderAll() {
+  renderHeader();
+  renderDateNav();
+  renderStreak();
+  renderTabs();
+  renderRoutineCard();
+  renderNote();
+  applyTheme();
+}
+
+document.getElementById('skincare_amBtn').onclick = () => { activeTab = 'am'; isEditing = false; renderAll(); };
+document.getElementById('skincare_pmBtn').onclick = () => { activeTab = 'pm'; isEditing = false; renderAll(); };
+document.getElementById('skincare_editBtn').onclick = enterEdit;
+document.getElementById('skincare_cancelEditBtn').onclick = cancelEdit;
+document.getElementById('skincare_saveEditBtn').onclick = saveEdit;
+document.getElementById('skincare_addItemBtn').onclick = () => { draftItems.push(''); renderEditItems(); };
+document.getElementById('skincare_noteInput').oninput = (e) => { records.note = e.target.value; saveRecords(); };
+
+document.getElementById('skincare_prevDayBtn').onclick = () => {
+  const d = new Date(currentDate);
+  d.setDate(d.getDate() - 1);
+  goToDate(d);
+};
+document.getElementById('skincare_nextDayBtn').onclick = () => {
+  if (isToday(currentDate)) return;
+  const d = new Date(currentDate);
+  d.setDate(d.getDate() + 1);
+  goToDate(d);
+};
+document.getElementById('skincare_todayBtn').onclick = () => goToDate(new Date());
+document.getElementById('skincare_dateNavLabel').onclick = openCalendar;
+
+const calOverlay = document.getElementById('skincare_calOverlay');
+calOverlay.onclick = (e) => { if (e.target === calOverlay) calOverlay.classList.remove('open'); };
+document.getElementById('skincare_calPrevMonth').onclick = () => {
+  calMonth.setMonth(calMonth.getMonth() - 1);
+  renderCalendar();
+};
+document.getElementById('skincare_calNextMonth').onclick = () => {
+  calMonth.setMonth(calMonth.getMonth() + 1);
+  renderCalendar();
+};
+
+/* theme panel */
+const themeOverlay = document.getElementById('skincare_themeOverlay');
+document.getElementById('skincare_themeBtn').onclick = () => { renderThemePanel(); themeOverlay.classList.add('open'); };
+document.getElementById('skincare_closeThemeBtn').onclick = () => themeOverlay.classList.remove('open');
+themeOverlay.onclick = (e) => { if (e.target === themeOverlay) themeOverlay.classList.remove('open'); };
+
+function renderThemePanel() {
+  const colorRow = document.getElementById('skincare_colorSwatches');
+  colorRow.innerHTML = '';
+  COLOR_THEMES.forEach(t => {
+    const sw = document.createElement('button');
+    sw.className = 'swatch' + (theme.name === t.name ? ' selected' : '');
+    sw.style.background = t.accent;
+    sw.title = t.name;
+    sw.onclick = () => { theme = t; saveTheme(); applyTheme(); renderThemePanel(); };
+    colorRow.appendChild(sw);
+  });
+
+  const wallGrid = document.getElementById('skincare_wallpaperGrid');
+  wallGrid.innerHTML = '';
+  const uploadBtn = document.createElement('button');
+  uploadBtn.className = 'uploadBtn';
+  uploadBtn.textContent = '+';
+  uploadBtn.onclick = () => document.getElementById('skincare_wallpaperFileInput').click();
+  wallGrid.appendChild(uploadBtn);
+
+  PRESET_WALLPAPERS.forEach(w => {
+    const thumb = document.createElement('button');
+    thumb.className = 'wallpaperThumb' + (wallpaper === w.value ? ' selected' : '') + (w.value === 'none' ? ' none' : '');
+    if (w.value === 'none') {
+      thumb.textContent = '无';
+    } else {
+      thumb.style.backgroundImage = w.value;
+    }
+    thumb.onclick = () => { wallpaper = w.value; saveWallpaperSelection(); applyTheme(); renderThemePanel(); };
+    wallGrid.appendChild(thumb);
+  });
+
+  customWallpapers.forEach((dataUrl, idx) => {
+    const thumb = document.createElement('button');
+    thumb.className = 'wallpaperThumb' + (wallpaper === dataUrl ? ' selected' : '');
+    thumb.style.backgroundImage = `url(${dataUrl})`;
+    thumb.onclick = () => { wallpaper = dataUrl; saveWallpaperSelection(); applyTheme(); renderThemePanel(); };
+    wallGrid.appendChild(thumb);
+  });
+}
+
+document.getElementById('skincare_wallpaperFileInput').onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    customWallpapers.push(dataUrl);
+    try {
+      saveCustomWallpapers();
+    } catch (err) {
+      alert('图片太大，存储失败，换一张小一点的图试试');
+      customWallpapers.pop();
+      return;
+    }
+    wallpaper = dataUrl;
+    saveWallpaperSelection();
+    applyTheme();
+    renderThemePanel();
+  };
+  reader.readAsDataURL(file);
+};
+
+loadAll();
+renderAll();
+
+})();
+</script>
+
+</div>
+</div>
+
+<div class="appPane" id="pane-ledger">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  .app-root-ledger { margin: 0; min-height: 100%; }
+  .app-root-ledger { font-family: "PingFang SC", "Helvetica Neue", -apple-system, sans-serif;
+    color: #2B2B26;
+    background: #F6F4EF;
+    padding: 20px 16px calc(90px + env(safe-area-inset-bottom));
+    min-height: 100vh; }
+  .app-root-ledger .container { max-width: 480px; margin: 0 auto; }
+  .app-root-ledger .header { margin-bottom: 16px; }
+  .app-root-ledger .eyebrow { font-size: 12px; letter-spacing: 0.08em; color: #B5764A; margin-bottom: 4px; }
+  .app-root-ledger h1 { font-size: 22px; font-weight: 700; margin: 0; }
+  .app-root-ledger .dateNav { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+  .app-root-ledger .dateNavBtn { border: 1px solid #EAE5D9; background: #fff; border-radius: 8px;
+    width: 30px; height: 30px; font-size: 14px; cursor: pointer; color: #5B5444; flex-shrink: 0; }
+  .app-root-ledger .dateNavLabel { flex: 1; text-align: center; font-size: 13px; color: #B5764A;
+    background: #fff; border-radius: 8px; padding: 7px 0; border: 1px solid #EAE5D9;
+    cursor: pointer; font-family: inherit; }
+  .app-root-ledger .todayBtn { border: 1px solid #EAE5D9; background: #fff; border-radius: 8px; padding: 0 10px; height: 30px;
+    font-size: 12px; color: #B5764A; cursor: pointer; flex-shrink: 0; }
+  .app-root-ledger .summaryRow { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; }
+  .app-root-ledger .summaryCard { flex: 1 0 22%; min-width: 78px; background: #fff; border-radius: 14px; padding: 10px 8px;
+    border: 1px solid #EAE5D9; cursor: pointer; text-align: center; }
+  .app-root-ledger .summaryCard.active { border-color: #B5764A; box-shadow: 0 0 0 1px #B5764A inset; }
+  .app-root-ledger .summaryCardLabel { font-size: 11px; color: #8A7B5E; margin-bottom: 6px; }
+  .app-root-ledger .summaryLine { font-size: 11px; color: #5B5444; }
+  .app-root-ledger .summaryLine.income { color: #6E9B7A; }
+  .app-root-ledger .summaryLine.expense { color: #C9706B; }
+  .app-root-ledger .summaryNet { font-size: 14px; font-weight: 700; margin-top: 4px; color: #2B2B26; }
+  .app-root-ledger .sectionLabel { font-size: 12px; color: #8A7B5E; margin: 4px 0 10px; }
+  .app-root-ledger .txRow { display: flex; align-items: center; gap: 10px; background: #fff; border-radius: 14px;
+    padding: 12px; border: 1px solid #EAE5D9; margin-bottom: 8px; cursor: pointer; }
+  .app-root-ledger .txDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .app-root-ledger .txMain { flex: 1; min-width: 0; }
+  .app-root-ledger .txCategory { font-size: 14px; font-weight: 600; }
+  .app-root-ledger .txNote { font-size: 12px; color: #8A7B5E; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .app-root-ledger .txAmount { font-size: 15px; font-weight: 700; flex-shrink: 0; }
+  .app-root-ledger .txAmount.income { color: #6E9B7A; }
+  .app-root-ledger .txAmount.expense { color: #C9706B; }
+  .app-root-ledger .txThumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+  .app-root-ledger .emptyState { text-align: center; color: #B7AE94; font-size: 13px; padding: 30px 0; }
+  .app-root-ledger .fab { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); right: 20px;
+    width: 56px; height: 56px; border-radius: 50%; background: #B5764A; color: #fff;
+    font-size: 26px; border: none; box-shadow: 0 4px 14px rgba(181,118,74,0.4); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; z-index: 40; }
+  .app-root-ledger .gearFab { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); left: 20px;
+    width: 44px; height: 44px; border-radius: 50%; background: #fff; color: #8A7B5E;
+    font-size: 18px; border: 1px solid #EAE5D9; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; z-index: 40; }
+  .app-root-ledger .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none;
+    align-items: flex-end; justify-content: center; z-index: 50; }
+  .app-root-ledger .overlay.open { display: flex; }
+  .app-root-ledger .sheet { background: #fff; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0;
+    padding: 20px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 88vh; overflow-y: auto; }
+  .app-root-ledger .sheetTitle { font-size: 16px; font-weight: 700; margin: 0 0 14px; }
+  .app-root-ledger .typeToggle { display: flex; gap: 8px; margin-bottom: 16px; }
+  .app-root-ledger .typeBtn { flex: 1; padding: 10px 0; border-radius: 10px; border: 1px solid #EAE5D9;
+    background: #FAF8F3; color: #5B5444; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .app-root-ledger .typeBtn.active.expense { background: #C9706B; color: #fff; border-color: #C9706B; }
+  .app-root-ledger .typeBtn.active.income { background: #6E9B7A; color: #fff; border-color: #6E9B7A; }
+  .app-root-ledger .amountInputWrap { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; }
+  .app-root-ledger .currencySign { font-size: 22px; font-weight: 700; color: #2B2B26; }
+  .app-root-ledger .amountInput { flex: 1; border: none; border-bottom: 2px solid #EAE5D9; font-size: 24px; font-weight: 700;
+    padding: 4px 0; font-family: inherit; color: #2B2B26; background: transparent; }
+  .app-root-ledger .amountInput:focus { outline: none; border-color: #B5764A; }
+  .app-root-ledger .fieldLabel { font-size: 12px; color: #8A7B5E; margin: 14px 0 8px; }
+  .app-root-ledger .catChipRow { display: flex; gap: 8px; flex-wrap: wrap; }
+  .app-root-ledger .catChip { padding: 7px 12px; border-radius: 10px; border: 1px solid #EAE5D9; background: #FAF8F3;
+    font-size: 13px; color: #5B5444; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .app-root-ledger .catChip.selected { background: #2B2B26; color: #fff; border-color: #2B2B26; }
+  .app-root-ledger .catChipDot { width: 8px; height: 8px; border-radius: 50%; }
+  .app-root-ledger .addCatChip { padding: 7px 12px; border-radius: 10px; border: 1px dashed #C9A06B; background: transparent;
+    font-size: 13px; color: #B5764A; cursor: pointer; }
+  .app-root-ledger .textInput, .app-root-ledger .dateInput { width: 100%; padding: 9px 10px; border-radius: 8px; border: 1px solid #EAE5D9;
+    font-size: 14px; font-family: inherit; box-sizing: border-box; background: #FAF8F3; }
+  .app-root-ledger .uploadRow { display: flex; gap: 10px; align-items: center; margin-top: 4px; }
+  .app-root-ledger .uploadBox { width: 64px; height: 64px; border-radius: 12px; border: 1.5px dashed #C9A06B;
+    display: flex; align-items: center; justify-content: center; font-size: 20px; color: #C9A06B;
+    cursor: pointer; flex-shrink: 0; background: transparent; position: relative; overflow: hidden; }
+  .app-root-ledger .uploadBox img { width: 100%; height: 100%; object-fit: cover; }
+  .app-root-ledger .removeImgBtn { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(0,0,0,0.6); color: #fff; font-size: 11px; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; }
+  .app-root-ledger input[type="file"] { display: none; }
+  .app-root-ledger .sheetActionsRow { display: flex; gap: 8px; margin-top: 20px; }
+  .app-root-ledger .primaryBtn { flex: 1; padding: 12px 0; border-radius: 10px; border: none; background: #B5764A;
+    color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .app-root-ledger .secondaryBtn { flex: 1; padding: 12px 0; border-radius: 10px; border: 1px solid #EAE5D9; background: #fff;
+    color: #8A7B5E; font-size: 14px; cursor: pointer; }
+  .app-root-ledger .deleteBtn { padding: 12px 16px; border-radius: 10px; border: 1px solid #F0D9D6; background: #fff;
+    color: #C9706B; font-size: 14px; cursor: pointer; }
+  .app-root-ledger .catManageGroup { margin-bottom: 18px; }
+  .app-root-ledger .catManageTitle { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .app-root-ledger .catManageRow { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .app-root-ledger .catManageRow input[type="text"] { flex: 1; }
+  .app-root-ledger .catColorDot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; border: 2px solid transparent; cursor: pointer; }
+  .app-root-ledger .catColorDot.selected { border-color: #2B2B26; }
+  .app-root-ledger .colorPickRow { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .app-root-ledger .calPanel { background: #fff; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0;
+    padding: 20px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 85vh; overflow-y: auto; }
+  .app-root-ledger .calHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .app-root-ledger .calMonthLabel { font-size: 16px; font-weight: 700; }
+  .app-root-ledger .calNavBtn { border: 1px solid #EAE5D9; background: #fff; border-radius: 8px;
+    width: 30px; height: 30px; font-size: 14px; cursor: pointer; color: #5B5444; }
+  .app-root-ledger .calWeekdays { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 4px; }
+  .app-root-ledger .calWeekday { text-align: center; font-size: 11px; color: #B7AE94; padding: 4px 0; }
+  .app-root-ledger .calGrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .app-root-ledger .calCell { aspect-ratio: 1; border-radius: 10px; border: none; background: #F7F4ED;
+    font-size: 13px; color: #3D3A30; cursor: pointer; position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+  .app-root-ledger .calCell.empty { background: transparent; cursor: default; }
+  .app-root-ledger .calCell.future { color: #D8D2C2; cursor: not-allowed; }
+  .app-root-ledger .calCell.selected { background: #B5764A; color: #fff; }
+  .app-root-ledger .calCell.today:not(.selected) { box-shadow: 0 0 0 1.5px #B5764A inset; }
+  .app-root-ledger .calDotRow { display: flex; gap: 2px; }
+  .app-root-ledger .calDot { width: 4px; height: 4px; border-radius: 50%; }
+  .app-root-ledger .imgViewerOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none;
+    align-items: center; justify-content: center; z-index: 60; padding: 20px; }
+  .app-root-ledger .imgViewerOverlay.open { display: flex; }
+  .app-root-ledger .imgViewerOverlay img { max-width: 100%; max-height: 100%; border-radius: 8px; }
+</style>
+<div id="app-root-ledger" class="app-root-ledger">
+
+<div class="container">
+  <div class="header">
+    <div class="eyebrow">记账</div>
+    <h1>收支记录</h1>
+  </div>
+
+  <div class="dateNav">
+    <button class="dateNavBtn" id="ledger_prevDayBtn">←</button>
+    <button class="dateNavLabel" id="ledger_dateNavLabel"></button>
+    <button class="dateNavBtn" id="ledger_nextDayBtn">→</button>
+    <button class="todayBtn" id="ledger_todayBtn">今天</button>
+  </div>
+
+  <div class="summaryRow">
+    <div class="summaryCard active" id="ledger_dayCard" data-scope="day">
+      <div class="summaryCardLabel">日</div>
+      <div class="summaryLine income" id="ledger_dayIncome">收 ¥0</div>
+      <div class="summaryLine expense" id="ledger_dayExpense">支 ¥0</div>
+      <div class="summaryNet" id="ledger_dayNet">¥0</div>
+    </div>
+    <div class="summaryCard" id="ledger_weekCard" data-scope="week">
+      <div class="summaryCardLabel">周</div>
+      <div class="summaryLine income" id="ledger_weekIncome">收 ¥0</div>
+      <div class="summaryLine expense" id="ledger_weekExpense">支 ¥0</div>
+      <div class="summaryNet" id="ledger_weekNet">¥0</div>
+    </div>
+    <div class="summaryCard" id="ledger_monthCard" data-scope="month">
+      <div class="summaryCardLabel">月</div>
+      <div class="summaryLine income" id="ledger_monthIncome">收 ¥0</div>
+      <div class="summaryLine expense" id="ledger_monthExpense">支 ¥0</div>
+      <div class="summaryNet" id="ledger_monthNet">¥0</div>
+    </div>
+    <div class="summaryCard" id="ledger_yearCard" data-scope="year">
+      <div class="summaryCardLabel">年</div>
+      <div class="summaryLine income" id="ledger_yearIncome">收 ¥0</div>
+      <div class="summaryLine expense" id="ledger_yearExpense">支 ¥0</div>
+      <div class="summaryNet" id="ledger_yearNet">¥0</div>
+    </div>
+  </div>
+
+  <div class="sectionLabel" id="ledger_listLabel">今日明细</div>
+  <div id="ledger_txList"></div>
+</div>
+
+<button class="gearFab" id="ledger_gearFab">⚙</button>
+<button class="fab" id="ledger_addFab">+</button>
+
+<!-- Add/Edit transaction sheet -->
+<div class="overlay" id="ledger_txOverlay">
+  <div class="sheet">
+    <h3 class="sheetTitle" id="ledger_txSheetTitle">记一笔</h3>
+
+    <div class="typeToggle">
+      <button class="typeBtn expense" id="ledger_expenseTypeBtn">支出</button>
+      <button class="typeBtn income" id="ledger_incomeTypeBtn">收入</button>
+    </div>
+
+    <div class="amountInputWrap">
+      <span class="currencySign">¥</span>
+      <input type="number" inputmode="decimal" class="amountInput" id="ledger_amountInput" placeholder="0.00" />
+    </div>
+
+    <div class="fieldLabel">分类</div>
+    <div class="catChipRow" id="ledger_catChipRow"></div>
+
+    <div class="fieldLabel">日期</div>
+    <input type="date" class="dateInput" id="ledger_txDateInput" />
+
+    <div class="fieldLabel">备注</div>
+    <input type="text" class="textInput" id="ledger_noteInput" placeholder="选填" />
+
+    <div class="fieldLabel">截图 / 小票</div>
+    <div class="uploadRow">
+      <button class="uploadBox" id="ledger_uploadBox">+</button>
+      <input type="file" id="ledger_imgFileInput" accept="image/*" />
+    </div>
+
+    <div class="sheetActionsRow">
+      <button class="primaryBtn" id="ledger_saveTxBtn">保存</button>
+      <button class="secondaryBtn" id="ledger_cancelTxBtn">取消</button>
+    </div>
+    <div class="sheetActionsRow" id="ledger_deleteRow" style="display:none;">
+      <button class="deleteBtn" id="ledger_deleteTxBtn">删除这笔记录</button>
+    </div>
+  </div>
+</div>
+
+<!-- Category management sheet -->
+<div class="overlay" id="ledger_catOverlay">
+  <div class="sheet">
+    <h3 class="sheetTitle">管理分类</h3>
+    <div class="catManageGroup">
+      <div class="catManageTitle">支出分类</div>
+      <div id="ledger_expenseCatManageList"></div>
+      <button class="addCatChip" id="ledger_addExpenseCatBtn">+ 添加支出分类</button>
+    </div>
+    <div class="catManageGroup">
+      <div class="catManageTitle">收入分类</div>
+      <div id="ledger_incomeCatManageList"></div>
+      <button class="addCatChip" id="ledger_addIncomeCatBtn">+ 添加收入分类</button>
+    </div>
+    <div class="sheetActionsRow">
+      <button class="primaryBtn" id="ledger_closeCatBtn">完成</button>
+    </div>
+  </div>
+</div>
+
+<!-- Calendar -->
+<div class="overlay" id="ledger_calOverlay">
+  <div class="calPanel">
+    <div class="calHeader">
+      <button class="calNavBtn" id="ledger_calPrevMonth">←</button>
+      <div class="calMonthLabel" id="ledger_calMonthLabel"></div>
+      <button class="calNavBtn" id="ledger_calNextMonth">→</button>
+    </div>
+    <div class="calWeekdays">
+      <div class="calWeekday">一</div><div class="calWeekday">二</div><div class="calWeekday">三</div>
+      <div class="calWeekday">四</div><div class="calWeekday">五</div><div class="calWeekday">六</div>
+      <div class="calWeekday">日</div>
+    </div>
+    <div class="calGrid" id="ledger_calGrid"></div>
+  </div>
+</div>
+
+<!-- Image viewer -->
+<div class="imgViewerOverlay" id="ledger_imgViewerOverlay">
+  <img id="ledger_imgViewerImg" src="" />
+</div>
+
+<script>
+(function() {
+
+const TX_KEY = 'ledger_v1_transactions';
+const CAT_KEY = 'ledger_v1_categories';
+
+const DEFAULT_CATEGORIES = {
+  expense: [
+    { name: '餐饮', color: '#C9706B' },
+    { name: '交通', color: '#C98A4A' },
+    { name: '购物', color: '#9D8AC9' },
+    { name: '居住', color: '#6E93A8' },
+    { name: '娱乐', color: '#B5764A' },
+    { name: '医疗', color: '#7C9885' },
+    { name: '其他', color: '#A39A89' },
+  ],
+  income: [
+    { name: '工资', color: '#6E9B7A' },
+    { name: '兼职', color: '#7CA98A' },
+    { name: '理财', color: '#5B9AA0' },
+    { name: '其他', color: '#A39A89' },
+  ],
+};
+
+const COLOR_OPTIONS = ['#C9706B', '#C98A4A', '#B5764A', '#9D8AC9', '#6E93A8', '#7C9885', '#6E9B7A', '#5B9AA0', '#D9A05B', '#A39A89'];
+
+let transactions = [];
+let categories = {};
+let currentDate = new Date();
+let calMonth = new Date();
+let activeScope = 'day';
+let editingTxId = null;
+let formType = 'expense';
+let formCategory = '';
+let formImage = null;
+
+function dateKey(d) { return d.toISOString().slice(0, 10); }
+function todayKey() { return dateKey(new Date()); }
+function isFutureDate(dStr) { return dStr > todayKey(); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(TX_KEY);
+    transactions = raw ? JSON.parse(raw) : [];
+  } catch (e) { transactions = []; }
+  try {
+    const raw = localStorage.getItem(CAT_KEY);
+    categories = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+  } catch (e) { categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)); }
+}
+function saveTx() { localStorage.setItem(TX_KEY, JSON.stringify(transactions)); }
+function saveCats() { localStorage.setItem(CAT_KEY, JSON.stringify(categories)); }
+
+function getWeekRange(d) {
+  const day = d.getDay();
+  const diff = d.getDate() - (day === 0 ? 6 : day - 1);
+  const monday = new Date(d); monday.setDate(diff);
+  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+  return [dateKey(monday), dateKey(sunday)];
+}
+function getMonthRange(d) {
+  const start = new Date(d.getFullYear(), d.getMonth(), 1);
+  const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+  return [dateKey(start), dateKey(end)];
+}
+function getYearRange(d) {
+  const start = new Date(d.getFullYear(), 0, 1);
+  const end = new Date(d.getFullYear(), 11, 31);
+  return [dateKey(start), dateKey(end)];
+}
+
+function sumRange(startStr, endStr) {
+  let income = 0, expense = 0;
+  transactions.forEach(t => {
+    if (t.date >= startStr && t.date <= endStr) {
+      if (t.type === 'income') income += t.amount;
+      else expense += t.amount;
+    }
+  });
+  return { income, expense, net: income - expense };
+}
+
+function fmt(n) {
+  return n.toLocaleString('zh-CN', { maximumFractionDigits: 0 });
+}
+
+function renderSummary() {
+  const dStr = dateKey(currentDate);
+  const [wStart, wEnd] = getWeekRange(currentDate);
+  const [mStart, mEnd] = getMonthRange(currentDate);
+  const [yStart, yEnd] = getYearRange(currentDate);
+
+  const day = sumRange(dStr, dStr);
+  const week = sumRange(wStart, wEnd);
+  const month = sumRange(mStart, mEnd);
+  const year = sumRange(yStart, yEnd);
+
+  document.getElementById('ledger_dayIncome').textContent = '收 ¥' + fmt(day.income);
+  document.getElementById('ledger_dayExpense').textContent = '支 ¥' + fmt(day.expense);
+  document.getElementById('ledger_dayNet').textContent = '¥' + fmt(day.net);
+
+  document.getElementById('ledger_weekIncome').textContent = '收 ¥' + fmt(week.income);
+  document.getElementById('ledger_weekExpense').textContent = '支 ¥' + fmt(week.expense);
+  document.getElementById('ledger_weekNet').textContent = '¥' + fmt(week.net);
+
+  document.getElementById('ledger_monthIncome').textContent = '收 ¥' + fmt(month.income);
+  document.getElementById('ledger_monthExpense').textContent = '支 ¥' + fmt(month.expense);
+  document.getElementById('ledger_monthNet').textContent = '¥' + fmt(month.net);
+
+  document.getElementById('ledger_yearIncome').textContent = '收 ¥' + fmt(year.income);
+  document.getElementById('ledger_yearExpense').textContent = '支 ¥' + fmt(year.expense);
+  document.getElementById('ledger_yearNet').textContent = '¥' + fmt(year.net);
+
+  ['day', 'week', 'month', 'year'].forEach(scope => {
+    document.getElementById('ledger_' + scope + 'Card').className = 'summaryCard' + (activeScope === scope ? ' active' : '');
+  });
+}
+
+function renderDateNav() {
+  const opts = { month: 'numeric', day: 'numeric', weekday: 'short' };
+  document.getElementById('ledger_dateNavLabel').textContent = currentDate.toLocaleDateString('zh-CN', opts);
+  const isToday = dateKey(currentDate) === todayKey();
+  document.getElementById('ledger_nextDayBtn').disabled = isToday;
+  document.getElementById('ledger_nextDayBtn').style.opacity = isToday ? 0.35 : 1;
+  document.getElementById('ledger_todayBtn').style.display = isToday ? 'none' : 'block';
+}
+
+function getCategoryInfo(type, name) {
+  const list = categories[type] || [];
+  return list.find(c => c.name === name) || { name, color: '#A39A89' };
+}
+
+function renderTxList() {
+  const labelMap = { day: '今日明细', week: '本周明细', month: '本月明细', year: '本年明细' };
+  document.getElementById('ledger_listLabel').textContent = labelMap[activeScope];
+
+  let startStr, endStr;
+  const dStr = dateKey(currentDate);
+  if (activeScope === 'day') { startStr = dStr; endStr = dStr; }
+  else if (activeScope === 'week') { [startStr, endStr] = getWeekRange(currentDate); }
+  else if (activeScope === 'month') { [startStr, endStr] = getMonthRange(currentDate); }
+  else { [startStr, endStr] = getYearRange(currentDate); }
+
+  const list = transactions
+    .filter(t => t.date >= startStr && t.date <= endStr)
+    .sort((a, b) => (b.date + b.createdAt).localeCompare(a.date + a.createdAt));
+
+  const container = document.getElementById('ledger_txList');
+  container.innerHTML = '';
+
+  if (!list.length) {
+    const empty = document.createElement('div');
+    empty.className = 'emptyState';
+    empty.textContent = '暂无记录';
+    container.appendChild(empty);
+    return;
+  }
+
+  list.forEach(t => {
+    const cat = getCategoryInfo(t.type, t.category);
+    const row = document.createElement('div');
+    row.className = 'txRow';
+    row.onclick = () => openEditTx(t.id);
+
+    const dot = document.createElement('span');
+    dot.className = 'txDot';
+    dot.style.background = cat.color;
+
+    const main = document.createElement('div');
+    main.className = 'txMain';
+    const catEl = document.createElement('div');
+    catEl.className = 'txCategory';
+    const dateSuffix = activeScope === 'year' ? '  ·  ' + t.date : (activeScope !== 'day' ? '  ·  ' + t.date.slice(5) : '');
+    catEl.textContent = cat.name + dateSuffix;
+    main.appendChild(catEl);
+    if (t.note) {
+      const noteEl = document.createElement('div');
+      noteEl.className = 'txNote';
+      noteEl.textContent = t.note;
+      main.appendChild(noteEl);
+    }
+
+    const amount = document.createElement('div');
+    amount.className = 'txAmount ' + t.type;
+    amount.textContent = (t.type === 'income' ? '+' : '-') + '¥' + fmt(t.amount);
+
+    row.appendChild(dot);
+    row.appendChild(main);
+    if (t.image) {
+      const thumb = document.createElement('img');
+      thumb.className = 'txThumb';
+      thumb.src = t.image;
+      thumb.onclick = (e) => { e.stopPropagation(); openImgViewer(t.image); };
+      row.appendChild(thumb);
+    }
+    row.appendChild(amount);
+    container.appendChild(row);
+  });
+}
+
+function renderAll() {
+  renderDateNav();
+  renderSummary();
+  renderTxList();
+}
+
+/* ---------- date nav ---------- */
+function goToDate(d) {
+  currentDate = d;
+  renderAll();
+}
+document.getElementById('ledger_prevDayBtn').onclick = () => {
+  const d = new Date(currentDate); d.setDate(d.getDate() - 1); goToDate(d);
+};
+document.getElementById('ledger_nextDayBtn').onclick = () => {
+  if (dateKey(currentDate) === todayKey()) return;
+  const d = new Date(currentDate); d.setDate(d.getDate() + 1); goToDate(d);
+};
+document.getElementById('ledger_todayBtn').onclick = () => goToDate(new Date());
+
+['day', 'week', 'month', 'year'].forEach(scope => {
+  document.getElementById('ledger_' + scope + 'Card').onclick = () => { activeScope = scope; renderAll(); };
+});
+
+/* ---------- calendar ---------- */
+function dayHasTx(d) {
+  const dStr = dateKey(d);
+  return transactions.some(t => t.date === dStr);
+}
+function renderCalendar() {
+  const year = calMonth.getFullYear(), month = calMonth.getMonth();
+  document.getElementById('ledger_calMonthLabel').textContent = `${year}年${month + 1}月`;
+  const firstDay = new Date(year, month, 1);
+  const startOffset = (firstDay.getDay() + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayStr = todayKey();
+  const selectedStr = dateKey(currentDate);
+  const grid = document.getElementById('ledger_calGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < startOffset; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'calCell empty';
+    grid.appendChild(cell);
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(year, month, day);
+    const dStr = dateKey(d);
+    const future = isFutureDate(dStr);
+    const cell = document.createElement('button');
+    cell.className = 'calCell' + (future ? ' future' : '') + (dStr === todayStr ? ' today' : '') + (dStr === selectedStr ? ' selected' : '');
+    const num = document.createElement('span');
+    num.textContent = day;
+    cell.appendChild(num);
+    if (!future && dayHasTx(d)) {
+      const dotRow = document.createElement('span');
+      dotRow.className = 'calDotRow';
+      const dot = document.createElement('span');
+      dot.className = 'calDot';
+      dot.style.background = dStr === selectedStr ? '#fff' : '#B5764A';
+      dotRow.appendChild(dot);
+      cell.appendChild(dotRow);
+    }
+    if (!future) {
+      cell.onclick = () => { goToDate(d); document.getElementById('ledger_calOverlay').classList.remove('open'); };
+    } else {
+      cell.disabled = true;
+    }
+    grid.appendChild(cell);
+  }
+}
+document.getElementById('ledger_dateNavLabel').onclick = () => {
+  calMonth = new Date(currentDate);
+  renderCalendar();
+  document.getElementById('ledger_calOverlay').classList.add('open');
+};
+const calOverlay = document.getElementById('ledger_calOverlay');
+calOverlay.onclick = (e) => { if (e.target === calOverlay) calOverlay.classList.remove('open'); };
+document.getElementById('ledger_calPrevMonth').onclick = () => { calMonth.setMonth(calMonth.getMonth() - 1); renderCalendar(); };
+document.getElementById('ledger_calNextMonth').onclick = () => { calMonth.setMonth(calMonth.getMonth() + 1); renderCalendar(); };
+
+/* ---------- add/edit transaction ---------- */
+const txOverlay = document.getElementById('ledger_txOverlay');
+
+function renderCatChips() {
+  const row = document.getElementById('ledger_catChipRow');
+  row.innerHTML = '';
+  const list = categories[formType] || [];
+  list.forEach(cat => {
+    const chip = document.createElement('button');
+    chip.className = 'catChip' + (formCategory === cat.name ? ' selected' : '');
+    const dot = document.createElement('span');
+    dot.className = 'catChipDot';
+    dot.style.background = cat.color;
+    chip.appendChild(dot);
+    chip.appendChild(document.createTextNode(cat.name));
+    chip.onclick = () => { formCategory = cat.name; renderCatChips(); };
+    row.appendChild(chip);
+  });
+}
+
+function setFormType(type) {
+  formType = type;
+  document.getElementById('ledger_expenseTypeBtn').className = 'typeBtn expense' + (type === 'expense' ? ' active' : '');
+  document.getElementById('ledger_incomeTypeBtn').className = 'typeBtn income' + (type === 'income' ? ' active' : '');
+  const list = categories[formType] || [];
+  formCategory = list.length ? list[0].name : '';
+  renderCatChips();
+}
+
+document.getElementById('ledger_expenseTypeBtn').onclick = () => setFormType('expense');
+document.getElementById('ledger_incomeTypeBtn').onclick = () => setFormType('income');
+
+function resetUploadBox() {
+  const box = document.getElementById('ledger_uploadBox');
+  box.innerHTML = '+';
+}
+function showUploadedImage(dataUrl) {
+  const box = document.getElementById('ledger_uploadBox');
+  box.innerHTML = '';
+  const img = document.createElement('img');
+  img.src = dataUrl;
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'removeImgBtn';
+  removeBtn.textContent = '×';
+  removeBtn.onclick = (e) => { e.stopPropagation(); formImage = null; resetUploadBox(); };
+  box.appendChild(img);
+  box.appendChild(removeBtn);
+}
+
+document.getElementById('ledger_uploadBox').onclick = () => {
+  if (formImage) return;
+  document.getElementById('ledger_imgFileInput').click();
+};
+
+function resizeImage(file, maxDim, quality) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+          else { width = Math.round(width * maxDim / height); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('ledger_imgFileInput').onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const dataUrl = await resizeImage(file, 1000, 0.7);
+    formImage = dataUrl;
+    showUploadedImage(dataUrl);
+  } catch (err) {
+    alert('图片处理失败，换一张试试');
+  }
+  e.target.value = '';
+};
+
+function openAddTx() {
+  editingTxId = null;
+  document.getElementById('ledger_txSheetTitle').textContent = '记一笔';
+  document.getElementById('ledger_deleteRow').style.display = 'none';
+  document.getElementById('ledger_amountInput').value = '';
+  document.getElementById('ledger_noteInput').value = '';
+  document.getElementById('ledger_txDateInput').value = dateKey(currentDate);
+  document.getElementById('ledger_txDateInput').max = todayKey();
+  formImage = null;
+  resetUploadBox();
+  setFormType('expense');
+  txOverlay.classList.add('open');
+}
+
+function openEditTx(id) {
+  const t = transactions.find(x => x.id === id);
+  if (!t) return;
+  editingTxId = id;
+  document.getElementById('ledger_txSheetTitle').textContent = '编辑记录';
+  document.getElementById('ledger_deleteRow').style.display = 'flex';
+  document.getElementById('ledger_amountInput').value = t.amount;
+  document.getElementById('ledger_noteInput').value = t.note || '';
+  document.getElementById('ledger_txDateInput').value = t.date;
+  document.getElementById('ledger_txDateInput').max = todayKey();
+  formImage = t.image || null;
+  if (formImage) showUploadedImage(formImage); else resetUploadBox();
+  formType = t.type;
+  document.getElementById('ledger_expenseTypeBtn').className = 'typeBtn expense' + (t.type === 'expense' ? ' active' : '');
+  document.getElementById('ledger_incomeTypeBtn').className = 'typeBtn income' + (t.type === 'income' ? ' active' : '');
+  formCategory = t.category;
+  renderCatChips();
+  txOverlay.classList.add('open');
+}
+
+document.getElementById('ledger_addFab').onclick = openAddTx;
+document.getElementById('ledger_cancelTxBtn').onclick = () => txOverlay.classList.remove('open');
+txOverlay.onclick = (e) => { if (e.target === txOverlay) txOverlay.classList.remove('open'); };
+
+document.getElementById('ledger_saveTxBtn').onclick = () => {
+  const amount = parseFloat(document.getElementById('ledger_amountInput').value);
+  if (!amount || amount <= 0) { alert('请输入金额'); return; }
+  if (!formCategory) { alert('请选择分类'); return; }
+  const dateVal = document.getElementById('ledger_txDateInput').value || dateKey(currentDate);
+  const note = document.getElementById('ledger_noteInput').value.trim();
+
+  if (editingTxId) {
+    const t = transactions.find(x => x.id === editingTxId);
+    if (t) {
+      t.type = formType; t.amount = amount; t.category = formCategory;
+      t.date = dateVal; t.note = note; t.image = formImage;
+    }
+  } else {
+    transactions.push({
+      id: uid(), type: formType, amount, category: formCategory,
+      date: dateVal, note, image: formImage, createdAt: Date.now().toString(),
+    });
+  }
+  try {
+    saveTx();
+  } catch (err) {
+    alert('保存失败，可能是图片太多占满了存储空间，试试删除一些旧图片或换更小的图');
+    return;
+  }
+  txOverlay.classList.remove('open');
+  goToDate(new Date(dateVal));
+};
+
+document.getElementById('ledger_deleteTxBtn').onclick = () => {
+  if (!editingTxId) return;
+  if (!confirm('确定删除这笔记录吗？')) return;
+  transactions = transactions.filter(x => x.id !== editingTxId);
+  saveTx();
+  txOverlay.classList.remove('open');
+  renderAll();
+};
+
+/* ---------- category management ---------- */
+const catOverlay = document.getElementById('ledger_catOverlay');
+document.getElementById('ledger_gearFab').onclick = () => { renderCatManage(); catOverlay.classList.add('open'); };
+document.getElementById('ledger_closeCatBtn').onclick = () => { catOverlay.classList.remove('open'); renderCatChips(); };
+catOverlay.onclick = (e) => { if (e.target === catOverlay) catOverlay.classList.remove('open'); };
+
+function renderCatManage() {
+  ['expense', 'income'].forEach(type => {
+    const wrap = document.getElementById('ledger_' + type + 'CatManageList');
+    wrap.innerHTML = '';
+    categories[type].forEach((cat, idx) => {
+      const row = document.createElement('div');
+      row.className = 'catManageRow';
+
+      const dot = document.createElement('button');
+      dot.className = 'catColorDot';
+      dot.style.background = cat.color;
+      dot.onclick = () => toggleColorPicker(row, type, idx);
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'textInput';
+      input.value = cat.name;
+      input.oninput = (e) => { categories[type][idx].name = e.target.value; saveCats(); };
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'removeItemBtn';
+      removeBtn.textContent = '×';
+      removeBtn.style.border = '1px solid #EAE5D9';
+      removeBtn.style.background = '#fff';
+      removeBtn.style.color = '#C9706B';
+      removeBtn.style.borderRadius = '8px';
+      removeBtn.style.width = '32px';
+      removeBtn.style.cursor = 'pointer';
+      removeBtn.style.flexShrink = '0';
+      removeBtn.onclick = () => {
+        categories[type].splice(idx, 1);
+        saveCats();
+        renderCatManage();
+      };
+
+      row.appendChild(dot);
+      row.appendChild(input);
+      row.appendChild(removeBtn);
+      wrap.appendChild(row);
+    });
+  });
+}
+
+function toggleColorPicker(row, type, idx) {
+  let existing = row.parentElement.querySelector('.colorPickRow[data-active="1"]');
+  if (existing) existing.remove();
+  const pickRow = document.createElement('div');
+  pickRow.className = 'colorPickRow';
+  pickRow.setAttribute('data-active', '1');
+  COLOR_OPTIONS.forEach(color => {
+    const dot = document.createElement('button');
+    dot.className = 'catColorDot' + (categories[type][idx].color === color ? ' selected' : '');
+    dot.style.background = color;
+    dot.onclick = () => {
+      categories[type][idx].color = color;
+      saveCats();
+      renderCatManage();
+    };
+    pickRow.appendChild(dot);
+  });
+  row.insertAdjacentElement('afterend', pickRow);
+}
+
+document.getElementById('ledger_addExpenseCatBtn').onclick = () => {
+  const name = prompt('新支出分类名称');
+  if (!name || !name.trim()) return;
+  categories.expense.push({ name: name.trim(), color: COLOR_OPTIONS[categories.expense.length % COLOR_OPTIONS.length] });
+  saveCats();
+  renderCatManage();
+};
+document.getElementById('ledger_addIncomeCatBtn').onclick = () => {
+  const name = prompt('新收入分类名称');
+  if (!name || !name.trim()) return;
+  categories.income.push({ name: name.trim(), color: COLOR_OPTIONS[categories.income.length % COLOR_OPTIONS.length] });
+  saveCats();
+  renderCatManage();
+};
+
+/* ---------- image viewer ---------- */
+const imgViewerOverlay = document.getElementById('ledger_imgViewerOverlay');
+function openImgViewer(src) {
+  document.getElementById('ledger_imgViewerImg').src = src;
+  imgViewerOverlay.classList.add('open');
+}
+imgViewerOverlay.onclick = () => imgViewerOverlay.classList.remove('open');
+
+/* ---------- init ---------- */
+loadData();
+renderAll();
+
+})();
+</script>
+
+</div>
+</div>
+
+</div>
+
+<script>
+  const tabBtns = document.querySelectorAll('.tabBtn');
+  const panes = {
+    'app-root-training': document.getElementById('pane-training'),
+    'app-root-skincare': document.getElementById('pane-skincare'),
+    'app-root-ledger': document.getElementById('pane-ledger'),
+  };
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      Object.values(panes).forEach(p => p.classList.remove('active'));
+      panes[btn.dataset.target].classList.add('active');
+    });
+  });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+
+<style>
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button {
+    touch-action: manipulation;
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 3px solid #1d4ed8;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.18);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  .overlay[aria-hidden="true"] {
+    pointer-events: none;
+  }
+
+  @media (max-width: 900px) {
+    body {
+      background-attachment: scroll !important;
+    }
+
+    .app-root-training,
+    .app-root-skincare {
+      background-attachment: scroll !important;
+    }
+
+    #tabBar {
+      padding-left: 6px;
+      padding-right: 6px;
+    }
+
+    .tabBtn {
+      min-height: 44px;
+      min-width: 86px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .card,
+    .panel,
+    .overlayInner,
+    .sheet {
+      width: calc(100vw - 20px);
+      max-width: calc(100vw - 20px);
+    }
+
+    .app-root-training,
+    .app-root-skincare,
+    .app-root-ledger {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .summaryRow,
+    .dayStrip,
+    .weekStrip,
+    .calendarGrid,
+    .fieldRow,
+    .listRow {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .app-root-ledger .fab {
+      right: 12px;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+    }
+
+    .app-root-ledger .gearFab {
+      left: 12px;
+      bottom: calc(12px + env(safe-area-inset-bottom));
+    }
+  }
+
+  @media (max-width: 520px) {
+    button,
+    input,
+    textarea,
+    select {
+      font-size: 16px;
+    }
+
+    .tabBtn {
+      font-size: 13px;
+      padding-top: 12px;
+      padding-bottom: 10px;
+    }
+
+    .card,
+    .panel,
+    .overlayInner,
+    .sheet {
+      width: calc(100vw - 16px);
+      max-width: calc(100vw - 16px);
+    }
+
+    .app-root-training,
+    .app-root-skincare,
+    .app-root-ledger {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+<script>
+  (() => {
+    const tabButtons = Array.from(document.querySelectorAll('button.tabBtn[data-target]'));
+    const labelMap = {
+      training_prevWeek: '上一周',
+      training_nextWeek: '下一周',
+      training_weekLabel: '本周',
+      training_themeBtn: '训练主题设置',
+      training_editBtn: '编辑训练计划',
+      training_doneCheckbox: '标记本周训练已完成',
+      training_planLabelInput: '训练计划名称',
+      training_addItemBtn: '添加训练动作',
+      training_saveEditBtn: '保存训练修改',
+      training_cancelEditBtn: '取消训练修改',
+      training_noteInput: '训练备注',
+      training_uploadWallpaperBtn: '上传训练背景',
+      training_wallpaperFileInput: '训练背景图片文件',
+      training_closeThemeBtn: '关闭训练主题面板',
+      training_calPrevMonth: '上一月',
+      training_calNextMonth: '下一月',
+      skincare_themeBtn: '护肤主题设置',
+      skincare_prevDayBtn: '上一天',
+      skincare_nextDayBtn: '下一天',
+      skincare_todayBtn: '回到今天',
+      skincare_amBtn: '早间 AM',
+      skincare_pmBtn: '晚间 PM',
+      skincare_editBtn: '编辑护肤步骤',
+      skincare_addItemBtn: '添加护肤步骤',
+      skincare_saveEditBtn: '保存护肤修改',
+      skincare_cancelEditBtn: '取消护肤修改',
+      skincare_noteInput: '护肤备注',
+      skincare_uploadWallpaperBtn: '上传护肤背景',
+      skincare_wallpaperFileInput: '护肤背景图片文件',
+      skincare_closeThemeBtn: '关闭护肤主题面板',
+      skincare_calPrevMonth: '上一月',
+      skincare_calNextMonth: '下一月',
+      ledger_gearFab: '管理账目分类',
+      ledger_addFab: '新增账目',
+      ledger_expenseTypeBtn: '支出',
+      ledger_incomeTypeBtn: '收入',
+      ledger_amountInput: '金额',
+      ledger_txDateInput: '日期',
+      ledger_noteInput: '备注',
+      ledger_uploadBox: '上传凭证图片',
+      ledger_imgFileInput: '凭证图片文件',
+      ledger_saveTxBtn: '保存账目',
+      ledger_cancelTxBtn: '取消账目编辑',
+      ledger_deleteTxBtn: '删除这笔记录',
+      ledger_addExpenseCatBtn: '添加支出分类',
+      ledger_addIncomeCatBtn: '添加收入分类',
+      ledger_closeCatBtn: '关闭分类管理',
+      ledger_calPrevMonth: '上一月',
+      ledger_calNextMonth: '下一月'
+    };
+
+    function setLabel(el, label) {
+      if (!el) return;
+      if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', label);
+      if (!el.getAttribute('title')) el.setAttribute('title', label);
+    }
+
+    function syncTabs() {
+      if (!tabButtons.length) return;
+      const tablist = tabButtons[0].parentElement;
+      if (tablist) tablist.setAttribute('role', 'tablist');
+
+      tabButtons.forEach((btn, index) => {
+        const targetId = btn.dataset.target || '';
+        const panel = targetId ? document.getElementById(targetId) : null;
+
+        if (!btn.id) btn.id = `codex-tab-${index}`;
+
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('type', 'button');
+        if (targetId) btn.setAttribute('aria-controls', targetId);
+
+        const selected = btn.classList.contains('active');
+        btn.setAttribute('aria-selected', String(selected));
+        btn.tabIndex = selected ? 0 : -1;
+
+        if (panel) {
+          panel.setAttribute('role', 'tabpanel');
+          panel.setAttribute('aria-labelledby', btn.id);
+          panel.hidden = !selected;
+        }
+      });
+    }
+
+    function syncPressedButtons() {
+      document.querySelectorAll('button.toggleBtn').forEach((btn) => {
+        btn.setAttribute('aria-pressed', String(btn.classList.contains('active')));
+      });
+    }
+
+    function syncDialogs() {
+      document.querySelectorAll('.overlay').forEach((ov) => {
+        ov.setAttribute('role', 'dialog');
+        ov.setAttribute('aria-modal', 'true');
+        ov.setAttribute('aria-hidden', String(!ov.classList.contains('open')));
+        if (!ov.hasAttribute('tabindex')) ov.tabIndex = -1;
+
+        if (ov.classList.contains('open')) {
+          const focusable = ov.querySelector(
+            'button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])'
+          );
+          if (focusable) {
+            focusable.focus({ preventScroll: true });
+          } else {
+            ov.focus({ preventScroll: true });
+          }
+        }
+      });
+    }
+
+    function applyLabels() {
+      Object.entries(labelMap).forEach(([id, label]) => {
+        setLabel(document.getElementById(id), label);
+      });
+
+      ['training_weekLabel', 'skincare_dateNavLabel', 'ledger_dateNavLabel'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.setAttribute('aria-live', 'polite');
+        el.setAttribute('aria-atomic', 'true');
+      });
+    }
+
+    function applyButtons() {
+      document.querySelectorAll('button').forEach((btn) => {
+        if (!btn.hasAttribute('type')) btn.setAttribute('type', 'button');
+      });
+
+      [
+        'training_prevWeek',
+        'training_nextWeek',
+        'training_themeBtn',
+        'training_editBtn',
+        'training_addItemBtn',
+        'training_saveEditBtn',
+        'training_cancelEditBtn',
+        'training_uploadWallpaperBtn',
+        'training_closeThemeBtn',
+        'training_calPrevMonth',
+        'training_calNextMonth',
+        'skincare_themeBtn',
+        'skincare_prevDayBtn',
+        'skincare_nextDayBtn',
+        'skincare_todayBtn',
+        'skincare_editBtn',
+        'skincare_addItemBtn',
+        'skincare_saveEditBtn',
+        'skincare_cancelEditBtn',
+        'skincare_uploadWallpaperBtn',
+        'skincare_closeThemeBtn',
+        'skincare_calPrevMonth',
+        'skincare_calNextMonth',
+        'ledger_gearFab',
+        'ledger_addFab',
+        'ledger_expenseTypeBtn',
+        'ledger_incomeTypeBtn',
+        'ledger_uploadBox',
+        'ledger_saveTxBtn',
+        'ledger_cancelTxBtn',
+        'ledger_deleteTxBtn',
+        'ledger_addExpenseCatBtn',
+        'ledger_addIncomeCatBtn',
+        'ledger_closeCatBtn',
+        'ledger_calPrevMonth',
+        'ledger_calNextMonth'
+      ].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el && labelMap[id]) setLabel(el, labelMap[id]);
+      });
+    }
+
+    function syncAll() {
+      syncTabs();
+      syncPressedButtons();
+      syncDialogs();
+      applyLabels();
+      applyButtons();
+    }
+
+    function watchChanges() {
+      tabButtons.forEach((btn) => {
+        new MutationObserver(syncAll).observe(btn, {
+          attributes: true,
+          attributeFilter: ['class']
+        });
+      });
+
+      document.querySelectorAll('button.toggleBtn').forEach((btn) => {
+        new MutationObserver(syncPressedButtons).observe(btn, {
+          attributes: true,
+          attributeFilter: ['class']
+        });
+      });
+
+      document.querySelectorAll('.overlay').forEach((ov) => {
+        new MutationObserver(syncDialogs).observe(ov, {
+          attributes: true,
+          attributeFilter: ['class']
+        });
+      });
+
+      document.addEventListener(
+        'click',
+        (event) => {
+          const tab = event.target.closest && event.target.closest('button.tabBtn[data-target]');
+          if (tab) requestAnimationFrame(syncAll);
+        },
+        true
+      );
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+
+      const openOverlay = Array.from(document.querySelectorAll('.overlay.open')).pop();
+      if (!openOverlay) return;
+
+      const closeBtn = Array.from(openOverlay.querySelectorAll('button')).find((btn) =>
+        /关闭|完成|取消/.test(btn.textContent.trim())
+      );
+
+      if (closeBtn) {
+        closeBtn.click();
+        event.preventDefault();
+      }
+    });
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        syncAll();
+        watchChanges();
+      });
+    } else {
+      syncAll();
+      watchChanges();
+    }
+  })();
+</script>
+</body>
+</html>
