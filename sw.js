@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'combined-tools-ios-offline-v1';
+const CACHE_NAME = 'combined-tools-ios-offline-v2';
 const ASSETS = [
   './',
   './index.html',
